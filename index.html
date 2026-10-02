@@ -57,6 +57,7 @@
       </div>
 
       <div class="flex items-center space-x-2">
+        <!-- TOMBOL ADMIN TOGGLE -->
         <button id="adminBtn" onclick="toggleAdminLogin()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
           <i class="fa-solid fa-shield-halved text-green-400"></i>
           <span id="adminBtnText">Admin</span>
@@ -271,14 +272,16 @@
   </div>
 
 
-  <!-- SCRIPT UTAMA -->
+  <!-- SCRIPT UTAMA PERBAIKAN PERSISTENSI DATA -->
   <script>
     let currentBuyerName = localStorage.getItem('jasbug_buyer_name') || "";
-    let isAdmin = false;
+    // BACA STATUS ADMIN DARI LOCALSTORAGE
+    let isAdmin = localStorage.getItem('jasbug_is_admin') === 'true';
     const ADMIN_PASSWORD = "admin123";
     let targetCounter = 0;
     let currentOrder = null;
 
+    // BACA PESANAN DARI LOCALSTORAGE
     let adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
 
     // INISIALISASI HALAMAN
@@ -286,6 +289,13 @@
       if(currentBuyerName) {
         document.getElementById('displayBuyerName').innerText = currentBuyerName;
       }
+
+      // CEK DAN RE-APPLY MODE ADMIN JIKA SEBELUMNYA REFRESH
+      if(isAdmin) {
+        document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
+        document.getElementById('adminPanelOrders').classList.remove('hidden');
+      }
+
       updateClock();
       setInterval(updateClock, 1000);
       renderAdminOrders();
@@ -494,13 +504,12 @@
         const base64Img = e.target.result;
         currentOrder.proofImg = base64Img;
 
-        // SIMPAN KE ADMIN & STORAGE
+        // BACA DATA TERBARU LALU SIMPAN DENGAN AMAN KE LOCALSTORAGE
+        adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
         adminOrders.unshift(currentOrder);
         localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
         
-        // BUNYI BEEP NOTIFIKASI UNTUK ADMIN
         playNotificationSound();
-
         renderAdminOrders();
         closeModal('paymentModal');
         openModal('statusModal');
@@ -533,6 +542,8 @@
       }
 
       const container = document.getElementById('buyerHistoryContainer');
+      // AMBIL KEMBALI DATA DARI LOCALSTORAGE
+      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
       const myOrders = adminOrders.filter(o => o.buyerName === currentBuyerName);
 
       if(myOrders.length === 0) {
@@ -576,12 +587,13 @@
       openModal('buyerHistoryModal');
     }
 
-    // ADMIN MODE
+    // ADMIN MODE DENGAN SIMPANAN LOCALSTORAGE
     function toggleAdminLogin() {
       if (!isAdmin) {
         const pass = prompt("Masukkan Password Admin:");
         if (pass === ADMIN_PASSWORD) {
           isAdmin = true;
+          localStorage.setItem('jasbug_is_admin', 'true'); // DITERAPKAN PERMANEN
           document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
           document.getElementById('adminPanelOrders').classList.remove('hidden');
           renderAdminOrders();
@@ -590,15 +602,19 @@
           alert("Password salah!");
         }
       } else {
-        isAdmin = false;
-        document.getElementById('adminBtnText').innerText = "Admin";
-        document.getElementById('adminPanelOrders').classList.add('hidden');
-        showToast("Anda keluar dari mode Admin.");
+        if(confirm("Apakah Anda yakin ingin keluar dari mode Admin?")) {
+          isAdmin = false;
+          localStorage.setItem('jasbug_is_admin', 'false'); // DISIMPANKAN
+          document.getElementById('adminBtnText').innerText = "Admin";
+          document.getElementById('adminPanelOrders').classList.add('hidden');
+          showToast("Anda keluar dari mode Admin.");
+        }
       }
     }
 
     // AKSI ADMIN: KONFIRMASI PESANAN
     function adminApproveOrder(orderId) {
+      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
       const order = adminOrders.find(o => o.id === orderId);
       if(order) {
         order.status = "CONFIRMED";
@@ -611,6 +627,7 @@
 
     // AKSI ADMIN: TOLAK PESANAN (BUKTI PALSU)
     function adminRejectOrder(orderId) {
+      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
       const order = adminOrders.find(o => o.id === orderId);
       if(order) {
         order.status = "REJECTED";
@@ -623,6 +640,7 @@
 
     function adminDeleteOrder(orderId) {
       if(confirm("Hapus pesanan ini dari daftar admin?")) {
+        adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
         adminOrders = adminOrders.filter(o => o.id !== orderId);
         localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
         renderAdminOrders();
@@ -635,6 +653,7 @@
       const badge = document.getElementById('orderBadgeCount');
       if(!container) return;
 
+      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
       badge.innerText = `${adminOrders.length} Pesanan`;
 
       if(adminOrders.length === 0) {
@@ -646,7 +665,6 @@
       adminOrders.forEach(o => {
         let targetsHtml = o.targets.map(t => `<div class="bg-gray-900 p-1.5 rounded border border-gray-800 text-[11px]"><b class="text-green-400">+62${escapeHtml(t.number)}</b> — <span class="text-gray-300">${escapeHtml(t.type)}</span></div>`).join('');
         
-        // STATUS BADGE
         let statusBadge = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold">Menunggu Verifikasi</span>`;
         if (o.status === "CONFIRMED") {
           statusBadge = `<span class="bg-green-500/20 text-green-400 border border-green-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold"><i class="fa-solid fa-check mr-1"></i> Dikonfirmasi</span>`;
@@ -661,9 +679,7 @@
               <span class="font-bold text-green-400">Rp${o.total.toLocaleString('id-ID')}</span>
             </div>
 
-            <div>
-              ${statusBadge}
-            </div>
+            <div>${statusBadge}</div>
             
             <div class="space-y-1">
               <div class="text-gray-400 text-[10px] font-bold uppercase">Daftar Target Bug:</div>
@@ -679,7 +695,6 @@
               </div>
             ` : ''}
 
-            <!-- TOMBOL AKSI ADMIN -->
             <div class="pt-2 border-t border-gray-800 flex flex-wrap gap-1.5 items-center justify-between">
               <div class="flex gap-1.5">
                 <button onclick="adminApproveOrder('${o.id}')" class="bg-green-500 hover:bg-green-400 text-gray-950 font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 transition">
