@@ -65,7 +65,7 @@
         <!-- NAMA BUYER DI POJOK KANAN ATAS -->
         <button onclick="changeBuyerName()" class="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700/80 px-3 py-1.5 rounded-xl border border-gray-700/50 transition">
           <i class="fa-solid fa-user text-green-400 text-xs"></i>
-          <span id="displayBuyerName" class="font-semibold text-xs text-gray-200">Belum Set Nama</span>
+          <span id="displayBuyerName" class="font-semibold text-xs text-gray-200">Set Nama Anda</span>
           <i class="fa-solid fa-pen text-[10px] text-gray-500 ml-1"></i>
         </button>
       </div>
@@ -93,8 +93,8 @@
         <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/30 text-blue-400">
           <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
         </div>
-        <span class="text-sm">Riwayat Bug</span>
-        <span class="text-[10px] text-gray-400 font-medium">Cek Status Pesanan</span>
+        <span class="text-sm">Riwayat Saya</span>
+        <span class="text-[10px] text-gray-400 font-medium">Cek Pesanan Anda</span>
       </button>
     </div>
 
@@ -102,7 +102,7 @@
     <div id="adminPanelOrders" class="hidden mb-6 bg-gray-900 border border-amber-500/40 rounded-2xl p-4">
       <div class="flex justify-between items-center mb-3">
         <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
-          <i class="fa-solid fa-bell animate-bounce"></i> Pesanan Masuk (Admin Mode)
+          <i class="fa-solid fa-bell animate-bounce"></i> Semua Pesanan Masuk (Admin Mode)
         </span>
         <span id="orderBadgeCount" class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">0 Pesanan</span>
       </div>
@@ -124,9 +124,9 @@
         <i class="fa-solid fa-user-tag text-xl"></i>
       </div>
       <h3 class="text-base font-bold text-white mb-1">Masukkan Nama Anda</h3>
-      <p class="text-xs text-gray-400 mb-4">Harap isi nama pelanggan sebelum melanjutkan ke pemesanan jasa bug.</p>
+      <p class="text-xs text-gray-400 mb-4">Harap isi nama pelanggan untuk sesi perangkat ini.</p>
       
-      <input type="text" id="buyerNameInput" placeholder="Contoh: Budi / Buyer12" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500 mb-4 text-center font-semibold">
+      <input type="text" id="buyerNameInput" placeholder="Contoh: Budi / Pelanggan-1" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500 mb-4 text-center font-semibold">
       
       <button onclick="saveBuyerName()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl text-xs transition">
         Simpan & Lanjutkan
@@ -149,8 +149,6 @@
       <p class="text-xs text-gray-400 mb-4">Pilih opsi bug & nomor target (Maksimal 10 nomor target).</p>
 
       <form id="jasbugForm" onsubmit="proceedToPayment(event)" class="space-y-4 overflow-y-auto pr-1 flex-1">
-        
-        <!-- CONTAINER TARGET & OPSI BUG -->
         <div class="space-y-3" id="targetListContainer">
           <!-- Render via JS -->
         </div>
@@ -159,7 +157,6 @@
           <i class="fa-solid fa-plus text-green-400"></i> Tambah Nomor Target (<span id="targetCountText">1</span>/10)
         </button>
 
-        <!-- TOTAL HARGA -->
         <div class="bg-gray-950 p-3.5 rounded-xl border border-green-500/30 flex justify-between items-center">
           <span class="text-xs text-gray-400 font-medium">Total Tagihan (Rp2.000/nomor):</span>
           <span id="orderTotalText" class="text-base font-extrabold text-green-400">Rp2.000</span>
@@ -187,19 +184,16 @@
       <p class="text-xs text-gray-400 mb-3">Scan QRIS menggunakan E-Wallet / Bank Anda.</p>
 
       <div class="space-y-4 overflow-y-auto pr-1 flex-1">
-        <!-- TOTAL TRANSFER -->
         <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl text-center">
           <div class="text-[11px] text-amber-300 font-semibold uppercase">Total Transfer Sesuai Order</div>
           <div id="qrisTotalAmount" class="text-2xl font-extrabold text-amber-400 font-mono">Rp2.000</div>
         </div>
 
-        <!-- GAMBAR QRIS -->
         <div class="bg-white p-3 rounded-2xl flex flex-col items-center justify-center border border-gray-700">
           <img id="qrisImage" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=QRIS_ALL_PAYMENT_JASBUG" alt="QRIS All Payment" class="w-48 h-48 object-contain">
           <span class="text-[10px] font-bold text-gray-800 mt-1">QRIS ALL PAYMENT (DANA, OVO, GOPAY, SHOPEEPAY, BANK)</span>
         </div>
 
-        <!-- CARA SCAN & TF -->
         <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 text-[11px] text-gray-300 space-y-1">
           <div class="font-bold text-white mb-1">Cara Scan & Transfer:</div>
           <ol class="list-decimal pl-4 space-y-0.5">
@@ -211,12 +205,8 @@
           </ol>
         </div>
 
-        <!-- UPLOAD BUKTI TF -->
         <div class="space-y-2 border-t border-gray-800 pt-3">
           <label class="block text-xs font-semibold text-amber-400">UPLOAD BUKTI TRANSFER (WAJIB)</label>
-          <div class="bg-amber-500/10 border border-dashed border-amber-500/40 p-2.5 rounded-xl text-[11px] text-amber-300 mb-1">
-            <i class="fa-solid fa-triangle-exclamation mr-1"></i> <b>Wajib SS bukti TF detail</b> (menampilkan nama pengirim, nominal, dan waktu/ID transaksi).
-          </div>
           <input type="file" id="proofFileInput" accept="image/*" class="w-full bg-gray-950 border border-gray-800 text-xs text-gray-300 rounded-xl p-2.5 focus:outline-none focus:border-green-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-500/20 file:text-green-400 hover:file:bg-green-500/30">
           
           <button onclick="submitProofOfPayment()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 mt-3">
@@ -237,9 +227,9 @@
 
       <div class="flex items-center space-x-2 text-blue-400 mb-1">
         <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-        <h3 class="font-bold text-lg text-white">Riwayat Bug Anda</h3>
+        <h3 class="font-bold text-lg text-white">Riwayat Bug Perangkat Ini</h3>
       </div>
-      <p class="text-xs text-gray-400 mb-4">Daftar transaksi & status konfirmasi dari Admin.</p>
+      <p class="text-xs text-gray-400 mb-4">Daftar transaksi khusus untuk akun ini.</p>
 
       <div id="buyerHistoryContainer" class="space-y-3 overflow-y-auto pr-1 flex-1 text-xs">
         <!-- Render via JS -->
@@ -256,7 +246,7 @@
       </div>
       <div>
         <h3 class="text-lg font-bold text-white">Pesanan Diteruskan ke Admin!</h3>
-        <p class="text-xs text-gray-300 mt-1">Bukti transfer Anda telah masuk ke dashboard admin. Anda dapat mengecek statusnya di menu <b>Riwayat Bug</b>.</p>
+        <p class="text-xs text-gray-300 mt-1">Bukti transfer Anda telah masuk ke sistem admin. Cek status berkala di menu <b>Riwayat Saya</b>.</p>
       </div>
       <button onclick="closeModal('statusModal'); openBuyerHistoryModal();" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
         Lihat Riwayat Saya
@@ -265,33 +255,38 @@
   </div>
 
 
-  <!-- TOAST NOTIFIKASI FLOATING -->
+  <!-- TOAST NOTIFIKASI -->
   <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 border border-green-500/50 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50">
     <i class="fa-solid fa-circle-check text-green-400 text-base"></i>
     <span id="toastMsg" class="text-xs font-medium">Berhasil!</span>
   </div>
 
 
-  <!-- SCRIPT UTAMA PERBAIKAN PERSISTENSI DATA -->
+  <!-- SCRIPT LOGIKA PERANGKAT TERPISAH (BUYER VS ADMIN) -->
   <script>
+    // 1. GENERATE BUYER ID UNIK UNTUK TIAP BROWSER
+    function getOrCreateBuyerId() {
+      let id = localStorage.getItem('jasbug_device_buyer_id');
+      if (!id) {
+        id = 'BUYER-' + Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('jasbug_device_buyer_id', id);
+      }
+      return id;
+    }
+
+    const currentBuyerId = getOrCreateBuyerId();
     let currentBuyerName = localStorage.getItem('jasbug_buyer_name') || "";
-    // BACA STATUS ADMIN DARI LOCALSTORAGE
     let isAdmin = localStorage.getItem('jasbug_is_admin') === 'true';
     const ADMIN_PASSWORD = "admin123";
     let targetCounter = 0;
     let currentOrder = null;
 
-    // BACA PESANAN DARI LOCALSTORAGE
-    let adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-
-    // INISIALISASI HALAMAN
     window.onload = function() {
-      if(currentBuyerName) {
+      if (currentBuyerName) {
         document.getElementById('displayBuyerName').innerText = currentBuyerName;
       }
 
-      // CEK DAN RE-APPLY MODE ADMIN JIKA SEBELUMNYA REFRESH
-      if(isAdmin) {
+      if (isAdmin) {
         document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
         document.getElementById('adminPanelOrders').classList.remove('hidden');
       }
@@ -331,7 +326,6 @@
       }, 3000);
     }
 
-    // FUNGSI BUAT NAMA BUYER
     function changeBuyerName() {
       document.getElementById('buyerNameInput').value = currentBuyerName;
       openModal('nameModal');
@@ -339,8 +333,8 @@
 
     function saveBuyerName() {
       const input = document.getElementById('buyerNameInput').value.trim();
-      if(!input) {
-        alert("Harap masukkan nama Anda terlebih dahulu!");
+      if (!input) {
+        alert("Harap masukkan nama Anda!");
         return;
       }
       currentBuyerName = input;
@@ -351,24 +345,23 @@
     }
 
     function handleJasaBugClick() {
-      if(!currentBuyerName) {
+      if (!currentBuyerName) {
         openModal('nameModal');
         return;
       }
 
       const container = document.getElementById('targetListContainer');
-      if(container.children.length === 0) {
+      if (container.children.length === 0) {
         addTargetInput();
       }
       openModal('orderModal');
     }
 
-    // TAMBAH DYNAMIC NOMOR TARGET (MAX 10)
     function addTargetInput() {
       const container = document.getElementById('targetListContainer');
       const currentItems = container.querySelectorAll('.target-item').length;
 
-      if(currentItems >= 10) {
+      if (currentItems >= 10) {
         alert("Maksimal 10 nomor target!");
         return;
       }
@@ -407,7 +400,7 @@
 
     function removeTargetInput(elementId) {
       const el = document.getElementById(elementId);
-      if(el) el.remove();
+      if (el) el.remove();
       reindexTargets();
     }
 
@@ -415,11 +408,11 @@
       const items = document.querySelectorAll('#targetListContainer .target-item');
       items.forEach((item, index) => {
         const label = item.querySelector('.target-label');
-        if(label) label.innerText = `Target Nomor #${index + 1}`;
+        if (label) label.innerText = `Target Nomor #${index + 1}`;
         
         const deleteBtn = item.querySelector('.delete-btn');
-        if(deleteBtn) {
-          if(items.length === 1) {
+        if (deleteBtn) {
+          if (items.length === 1) {
             deleteBtn.classList.add('hidden');
           } else {
             deleteBtn.classList.remove('hidden');
@@ -430,7 +423,7 @@
       document.getElementById('targetCountText').innerText = items.length;
 
       const addBtn = document.getElementById('addTargetBtn');
-      if(items.length >= 10) {
+      if (items.length >= 10) {
         addBtn.classList.add('hidden');
       } else {
         addBtn.classList.remove('hidden');
@@ -446,7 +439,6 @@
       document.getElementById('orderTotalText').innerText = `Rp${total.toLocaleString('id-ID')}`;
     }
 
-    // PROSES PINDAH KE PEMBAYARAN
     function proceedToPayment(e) {
       e.preventDefault();
       const numberInputs = document.querySelectorAll('.target-number-input');
@@ -456,28 +448,28 @@
       let isValid = true;
 
       numberInputs.forEach((input, index) => {
-        if(!input.value.trim()) {
-          isValid = false;
-        }
+        if (!input.value.trim()) isValid = false;
         targets.push({
           number: input.value.trim(),
           type: typeSelects[index].value
         });
       });
 
-      if(!isValid) {
+      if (!isValid) {
         alert("Harap isi semua nomor target!");
         return;
       }
 
       const total = targets.length * 2000;
 
+      // MENYIMPAN BUYER_ID AGAR PESANAN TERPISAH PER PERANGKAT
       currentOrder = {
         id: "BUG-" + Date.now().toString().slice(-6),
+        buyerId: currentBuyerId,
         buyerName: currentBuyerName,
         targets: targets,
         total: total,
-        status: "PENDING", // PENDING, CONFIRMED, REJECTED
+        status: "PENDING",
         rejectReason: "",
         proofImg: null,
         date: new Date().toLocaleTimeString('id-ID')
@@ -489,11 +481,10 @@
       openModal('paymentModal');
     }
 
-    // UPLOAD BUKTI & CONFIRM KE ADMIN
     function submitProofOfPayment() {
       const fileInput = document.getElementById('proofFileInput');
-      if(fileInput.files.length === 0) {
-        alert("Harap upload SS Bukti Transfer Detail terlebih dahulu!");
+      if (fileInput.files.length === 0) {
+        alert("Harap upload SS Bukti Transfer terlebih dahulu!");
         return;
       }
 
@@ -501,53 +492,38 @@
       const reader = new FileReader();
 
       reader.onload = function(e) {
-        const base64Img = e.target.result;
-        currentOrder.proofImg = base64Img;
+        currentOrder.proofImg = e.target.result;
 
-        // BACA DATA TERBARU LALU SIMPAN DENGAN AMAN KE LOCALSTORAGE
-        adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-        adminOrders.unshift(currentOrder);
-        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
-        
-        playNotificationSound();
+        // MASUKKAN KEDALAM DATABASE GLOBAL (DATABASE BERSAMA SEMENTARA)
+        let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
+        allOrders.unshift(currentOrder);
+        localStorage.setItem('jasbug_global_orders', JSON.stringify(allOrders));
+
         renderAdminOrders();
         closeModal('paymentModal');
         openModal('statusModal');
 
-        showToast("Bukti transfer berhasil dikirim ke Admin!");
+        showToast("Bukti transfer dikirim!");
       };
 
       reader.readAsDataURL(file);
     }
 
-    function playNotificationSound() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 587.33;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      } catch(e) {}
-    }
-
-    // FUNGSI TAMPILKAN RIWAYAT BUG BUYER
+    // MEMBUKA RIWAYAT KHUSUS UNTUK BUYER DI BROWSER INI SAJA
     function openBuyerHistoryModal() {
-      if(!currentBuyerName) {
+      if (!currentBuyerName) {
         openModal('nameModal');
         return;
       }
 
       const container = document.getElementById('buyerHistoryContainer');
-      // AMBIL KEMBALI DATA DARI LOCALSTORAGE
-      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-      const myOrders = adminOrders.filter(o => o.buyerName === currentBuyerName);
+      const allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
 
-      if(myOrders.length === 0) {
-        container.innerHTML = `<div class="text-gray-500 italic text-center py-6">Belum ada riwayat transaksi bug untuk nama <b>${escapeHtml(currentBuyerName)}</b>.</div>`;
+      // FILTER BERDASARKAN BUYER ID UNIK BROWSER
+      const myOrders = allOrders.filter(o => o.buyerId === currentBuyerId);
+
+      if (myOrders.length === 0) {
+        container.innerHTML = `<div class="text-gray-500 italic text-center py-6">Belum ada riwayat transaksi pada perangkat ini.</div>`;
       } else {
         container.innerHTML = "";
         myOrders.forEach(o => {
@@ -555,7 +531,7 @@
           
           let statusBadge = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-spinner animate-spin"></i> Menunggu Verifikasi Admin</span>`;
           if (o.status === "CONFIRMED") {
-            statusBadge = `<span class="bg-green-500/20 text-green-400 border border-green-500/40 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Dikonfirmasi (Bug Diproses)</span>`;
+            statusBadge = `<span class="bg-green-500/20 text-green-400 border border-green-500/40 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Dikonfirmasi (Diproses)</span>`;
           } else if (o.status === "REJECTED") {
             statusBadge = `<span class="bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><i class="fa-solid fa-circle-xmark"></i> Ditolak: ${escapeHtml(o.rejectReason)}</span>`;
           }
@@ -575,8 +551,8 @@
               </div>
 
               <div class="text-[10px] text-gray-500 pt-1 border-t border-gray-800/80 flex justify-between">
-                <span>Pelanggan: <b>${escapeHtml(o.buyerName)}</b></span>
-                <span>Waktu Order: ${escapeHtml(o.date)}</span>
+                <span>Atas Nama: <b>${escapeHtml(o.buyerName)}</b></span>
+                <span>Waktu: ${escapeHtml(o.date)}</span>
               </div>
             </div>
           `;
@@ -587,82 +563,83 @@
       openModal('buyerHistoryModal');
     }
 
-    // ADMIN MODE DENGAN SIMPANAN LOCALSTORAGE
+    // CONTROLLER LOG IN UNTUK ADMIN
     function toggleAdminLogin() {
       if (!isAdmin) {
         const pass = prompt("Masukkan Password Admin:");
         if (pass === ADMIN_PASSWORD) {
           isAdmin = true;
-          localStorage.setItem('jasbug_is_admin', 'true'); // DITERAPKAN PERMANEN
+          localStorage.setItem('jasbug_is_admin', 'true');
           document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
           document.getElementById('adminPanelOrders').classList.remove('hidden');
           renderAdminOrders();
-          showToast("Berhasil masuk mode Admin.");
+          showToast("Berhasil masuk Mode Admin.");
         } else if (pass !== null) {
-          alert("Password salah!");
+          alert("Password Admin Salah!");
         }
       } else {
-        if(confirm("Apakah Anda yakin ingin keluar dari mode Admin?")) {
+        if (confirm("Keluar dari Mode Admin?")) {
           isAdmin = false;
-          localStorage.setItem('jasbug_is_admin', 'false'); // DISIMPANKAN
+          localStorage.setItem('jasbug_is_admin', 'false');
           document.getElementById('adminBtnText').innerText = "Admin";
           document.getElementById('adminPanelOrders').classList.add('hidden');
-          showToast("Anda keluar dari mode Admin.");
+          showToast("Keluar dari Mode Admin.");
         }
       }
     }
 
-    // AKSI ADMIN: KONFIRMASI PESANAN
+    // ADMIN AKSI KONFIRMASI
     function adminApproveOrder(orderId) {
-      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-      const order = adminOrders.find(o => o.id === orderId);
-      if(order) {
+      let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
+      const order = allOrders.find(o => o.id === orderId);
+      if (order) {
         order.status = "CONFIRMED";
         order.rejectReason = "";
-        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+        localStorage.setItem('jasbug_global_orders', JSON.stringify(allOrders));
         renderAdminOrders();
-        showToast("Pesanan berhasil dikonfirmasi!");
+        showToast("Pesanan dikonfirmasi!");
       }
     }
 
-    // AKSI ADMIN: TOLAK PESANAN (BUKTI PALSU)
+    // ADMIN AKSI TOLAK
     function adminRejectOrder(orderId) {
-      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-      const order = adminOrders.find(o => o.id === orderId);
-      if(order) {
+      let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
+      const order = allOrders.find(o => o.id === orderId);
+      if (order) {
         order.status = "REJECTED";
-        order.rejectReason = "Bukti palsu";
-        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+        order.rejectReason = "Bukti Pembayaran Palsu / Kurang";
+        localStorage.setItem('jasbug_global_orders', JSON.stringify(allOrders));
         renderAdminOrders();
-        showToast("Pesanan ditolak (Alasan: Bukti palsu)!");
+        showToast("Pesanan Ditolak.");
       }
     }
 
     function adminDeleteOrder(orderId) {
-      if(confirm("Hapus pesanan ini dari daftar admin?")) {
-        adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-        adminOrders = adminOrders.filter(o => o.id !== orderId);
-        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+      if (confirm("Hapus pesanan ini?")) {
+        let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
+        allOrders = allOrders.filter(o => o.id !== orderId);
+        localStorage.setItem('jasbug_global_orders', JSON.stringify(allOrders));
         renderAdminOrders();
         showToast("Pesanan dihapus.");
       }
     }
 
+    // RENDER SEMUA PESANAN KHUSUS ADMIN
     function renderAdminOrders() {
       const container = document.getElementById('adminOrdersList');
       const badge = document.getElementById('orderBadgeCount');
-      if(!container) return;
+      if (!container) return;
 
-      adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
-      badge.innerText = `${adminOrders.length} Pesanan`;
+      const allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
+      badge.innerText = `${allOrders.length} Pesanan`;
 
-      if(adminOrders.length === 0) {
+      if (allOrders.length === 0) {
         container.innerHTML = `<div class="text-gray-500 italic text-center py-2">Belum ada pesanan masuk.</div>`;
         return;
       }
 
       container.innerHTML = "";
-      adminOrders.forEach(o => {
+      allOrders.forEach(o => {
         let targetsHtml = o.targets.map(t => `<div class="bg-gray-900 p-1.5 rounded border border-gray-800 text-[11px]"><b class="text-green-400">+62${escapeHtml(t.number)}</b> — <span class="text-gray-300">${escapeHtml(t.type)}</span></div>`).join('');
         
         let statusBadge = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold">Menunggu Verifikasi</span>`;
@@ -689,7 +666,7 @@
             ${o.proofImg ? `
               <div class="pt-1">
                 <a href="${o.proofImg}" target="_blank" class="bg-gray-900 border border-amber-500/30 text-amber-400 text-[11px] p-2 rounded-xl flex items-center justify-between hover:bg-gray-800 transition">
-                  <span><i class="fa-solid fa-image mr-1"></i> SS Bukti Transfer Detail</span>
+                  <span><i class="fa-solid fa-image mr-1"></i> Lihat SS Bukti Transfer</span>
                   <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                 </a>
               </div>
@@ -711,7 +688,7 @@
             </div>
 
             <div class="text-[9px] text-gray-500 text-right">
-              Waktu Masuk: ${escapeHtml(o.date)}
+              ID Pembeli: ${escapeHtml(o.buyerId)} • Waktu: ${escapeHtml(o.date)}
             </div>
           </div>
         `;
@@ -719,7 +696,6 @@
       });
     }
 
-    // WAKTU REALTIME INDONESIA
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
