@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <!-- Banner Pesanan Aktif Pelanggan -->
+    <!-- Container Utama Pesanan Aktif Pelanggan -->
     <div id="activeOrderNotice" class="hidden bg-slate-800 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center">
       <div class="flex items-center gap-2.5">
         <span class="relative flex h-3 w-3">
@@ -198,6 +198,138 @@
 
     let selectedProductData = null;
     let activeOrderId = localStorage.getItem('active_jasbug_order_id');
+
+    function selectProduct(name, price) {
+      selectedProductData = { name, price };
+      document.getElementById('payProductName').innerText = name;
+      document.getElementById('payAmount').innerText = 'Rp ' + price.toLocaleString('id-ID');
+      openModal('paymentModal');
+    }
+
+    function confirmPaymentSubmit() {
+      const buyerName = document.getElementById('buyerNameInput').value.trim();
+      if (!buyerName) {
+        alert("Harap masukkan nama/username Anda!");
+        return;
+      }
+
+      const newOrderRef = db.ref('orders').push();
+      const orderId = newOrderRef.key;
+
+      const orderData = {
+        id: orderId,
+        buyerName: buyerName,
+        productName: selectedProductData.name,
+        price: selectedProductData.price,
+        status: "WAITING_ADMIN",
+        timestamp: Date.now()
+      };
+
+      newOrderRef.set(orderData).then(() => {
+        localStorage.setItem('active_jasbug_order_id', orderId);
+        activeOrderId = orderId;
+        closeModal('paymentModal');
+        updateActiveNoticeText("Menunggu konfirmasi admin...");
+        listenToOrderStatus(orderId);
+        openModal('statusModal');
+      }).catch(error => {
+        alert("Gagal mengirim pesanan: " + error.message);
+      });
+    }
+
+    function listenToOrderStatus(orderId) {
+      if (!orderId) return;
+
+      document.getElementById('activeOrderNotice').classList.remove('hidden');
+
+      db.ref('orders/' + orderId).on('value', (snapshot) => {
+        const order = snapshot.val();
+        if (!order) return;
+
+        if (order.status === "WAITING_ADMIN") {
+          document.getElementById('statusPendingBox').classList.remove('hidden');
+          document.getElementById('statusDoneBox').classList.add('hidden');
+          updateActiveNoticeText("Menunggu konfirmasi admin...");
+        } else if (order.status === "DONE") {
+          document.getElementById('statusPendingBox').classList.add('hidden');
+          document.getElementById('statusDoneBox').classList.remove('hidden');
+          updateActiveNoticeText("Akses telah disetujui Admin! Klik untuk lihat.");
+        }
+      });
+    }
+
+    function updateActiveNoticeText(text) {
+      document.getElementById('activeOrderText').innerText = text;
+    }
+
+    function toggleAdminPanel() {
+      openModal('adminPanelModal');
+      loadAdminOrders();
+    }
+
+    function loadAdminOrders() {
+      db.ref('orders').on('value', (snapshot) => {
+        const orders = snapshot.val();
+        const container = document.getElementById('adminOrdersList');
+        container.innerHTML = '';
+
+        if (!orders) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>';
+          return;
+        }
+
+        const keys = Object.keys(orders).reverse();
+        keys.forEach(key => {
+          const item = orders[key];
+          const card = document.createElement('div');
+          card.className = "bg-slate-900 border border-slate-700 p-3 rounded-xl space-y-2 text-xs";
+          
+          const time = new Date(item.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+
+          card.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-bold text-white">${item.buyerName} <span class="text-[10px] text-slate-400">(${time})</span></p>
+                <p class="text-emerald-400 font-semibold">${item.productName} - Rp ${item.price.toLocaleString('id-ID')}</p>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] rounded ${item.status === 'WAITING_ADMIN' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+                ${item.status === 'WAITING_ADMIN' ? 'Menunggu' : 'Disetujui'}
+              </span>
+            </div>
+            ${item.status === 'WAITING_ADMIN' ? `
+              <button onclick="approveOrder('${key}')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-check mr-1"></i> Terima Akses Pelanggan
+              </button>
+            ` : '<p class="text-[11px] text-slate-400 text-center">Transaksi Selesai</p>'}
+          `;
+          container.appendChild(card);
+        });
+      });
+    }
+
+    function approveOrder(orderId) {
+      db.ref('orders/' + orderId).update({
+        status: "DONE"
+      }).then(() => {
+        alert("Sukses! Akses pelanggan berhasil disetujui.");
+      });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (activeOrderId) {
+        listenToOrderStatus(activeOrderId);
+      }
+    });
+  </script>
+</body>
+</html>eOrderId = localStorage.getItem('active_jasbug_order_id');
 
     function selectProduct(name, price) {
       selectedProductData = { name, price };
