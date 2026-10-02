@@ -3,198 +3,331 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Jasbug Online</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Jasbug Online - Official Store</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Plus Jakarta Sans & FontAwesome Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #0b0f19;
-      color: #f3f4f6;
-    }
-    .neon-glow {
-      box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
-    }
-    .modal-backdrop {
-      transition: opacity 0.25s ease-in-out;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .modal-backdrop.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .modal-content {
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transform: scale(0.92) translateY(10px);
-      opacity: 0;
-    }
-    .modal-backdrop.active .modal-content {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-    .star-btn {
-      transition: transform 0.15s ease;
-    }
-    .star-btn:hover {
-      transform: scale(1.2);
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #111827;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #374151;
-      border-radius: 4px;
-    }
-  </style>
+  
+  <!-- Firebase SDK (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-4 md:p-6 max-w-2xl mx-auto pb-24">
+<body class="bg-slate-900 text-slate-100 min-h-screen pb-12 font-sans">
 
-  <!-- TOP BAR / HEADER -->
-  <div>
-    <div class="flex justify-between items-center bg-gray-900/80 backdrop-blur border border-gray-800 rounded-2xl p-4 mb-4">
-      <div class="flex items-center space-x-2 text-xs text-gray-400">
-        <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="font-medium text-gray-300">Sistem Online</span>
+  <!-- Header / Navbar -->
+  <header class="bg-slate-800/80 backdrop-blur sticky top-0 z-40 border-b border-slate-700">
+    <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-bug text-emerald-400 text-xl"></i>
+        <h1 class="font-bold text-lg text-white">Nopal <span class="text-emerald-400">Jasbug</span></h1>
       </div>
-
-      <div class="flex items-center space-x-3">
-        <button id="adminBtn" onclick="toggleAdminLogin()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-shield-halved text-green-400"></i>
-          <span id="adminBtnText">Akses Pemilik</span>
-        </button>
-        <div class="flex items-center space-x-2 bg-gray-800/60 px-3 py-1.5 rounded-xl border border-gray-700/50">
-          <i class="fa-solid fa-user text-green-400 text-xs"></i>
-          <span id="customerName" class="font-semibold text-xs text-gray-200">Pelanggan</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- WAKTU REALTIME INDONESIA -->
-    <div class="bg-gradient-to-r from-gray-900 via-gray-900 to-gray-800 border border-green-500/30 rounded-2xl p-4 text-center mb-6 neon-glow">
-      <div class="text-[11px] font-semibold text-green-400 uppercase tracking-widest mb-1">Waktu Real-Time Indonesia</div>
-      <div id="clock" class="text-3xl font-extrabold tracking-wider text-white font-mono">00:00:00 WIB</div>
-      <div id="date" class="text-xs text-gray-400 mt-1 font-medium">Hari, 00 Bulan 0000</div>
-    </div>
-
-    <!-- POSTER INFORMASI LIVE -->
-    <div class="relative group rounded-2xl overflow-hidden border border-gray-800 bg-gray-900 mb-6 shadow-xl">
-      <img id="posterImg" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="Poster Informasi" class="w-full h-48 object-cover opacity-60">
-      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent p-5 flex flex-col justify-end">
-        <span class="bg-green-500/20 text-green-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full w-fit border border-green-500/30 mb-2">INFO TERKINI</span>
-        <h2 id="posterTitle" class="text-xl font-bold text-white mb-1">Layanan Jasbug Online Otomatis</h2>
-        <p id="posterDesc" class="text-xs text-gray-300 line-clamp-2">Proses cepat, aman, dan bergaransi. Pilih jenis bug sesuai kebutuhan target Anda di bawah ini.</p>
-      </div>
-
-      <button id="editPosterBtn" onclick="openModal('editPosterModal')" class="hidden absolute top-3 right-3 bg-green-500 text-black font-semibold text-xs px-3 py-1.5 rounded-xl shadow-lg hover:bg-green-400 flex items-center gap-1 transition">
-        <i class="fa-solid fa-pen-to-square"></i> Setting Poster
+      <button onclick="toggleAdminPanel()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-600 flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-user-shield text-amber-400"></i> Admin
       </button>
     </div>
+  </header>
 
-    <!-- TOMBOL UTAMA & FITUR ULASAN -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <button onclick="openOrderModal()" class="bg-gradient-to-br from-green-500 to-emerald-700 hover:from-green-400 hover:to-emerald-600 text-gray-950 font-extrabold p-5 rounded-2xl shadow-lg border border-green-400/50 flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
-        <div class="bg-gray-950/20 p-3 rounded-xl">
-          <i class="fa-solid fa-bolt text-2xl text-gray-950"></i>
-        </div>
-        <span class="text-lg">Order Jasbug</span>
-        <span class="text-[10px] font-medium bg-black/20 px-2.5 py-0.5 rounded-full">Rp2.000 / Nomor</span>
-      </button>
-
-      <button onclick="openModal('reviewModal')" class="bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-green-500/40 text-white font-extrabold p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
-        <div class="bg-green-500/10 p-3 rounded-xl border border-green-500/20">
-          <i class="fa-solid fa-star text-2xl text-amber-400"></i>
-        </div>
-        <span class="text-base">Ulasan Pelanggan</span>
-        <div class="flex items-center space-x-1 text-[11px] text-amber-400 font-medium">
-          <i class="fa-solid fa-star"></i>
-          <span id="avgRatingDisplay">5.0 / 5.0</span>
-        </div>
-      </button>
+  <!-- Banner / Hero -->
+  <main class="max-w-md mx-auto px-4 pt-4 space-y-5">
+    <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-4 shadow-lg text-white relative overflow-hidden">
+      <div class="relative z-10">
+        <span class="text-xs bg-black/30 px-2.5 py-1 rounded-full text-emerald-200 font-medium">Official Jasbug Service</span>
+        <h2 class="text-xl font-bold mt-2">Layanan Jasbug Murah & Cepat</h2>
+        <p class="text-xs text-emerald-100 mt-1">Proses otomatis, terhubung langsung realtime!</p>
+      </div>
     </div>
 
-    <!-- PANEL KHUSUS ADMIN DAFTAR PESANAN MASUK -->
-    <div id="adminPanelOrders" class="hidden mb-6 bg-gray-900 border border-amber-500/40 rounded-2xl p-4">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
-          <i class="fa-solid fa-list-check"></i> Pesanan Masuk (Admin Mode)
+    <!-- Container Utama Pesanan Aktif Pelanggan (Jika ada) -->
+    <div id="activeOrderNotice" class="hidden bg-slate-800 border border-emerald-500/50 rounded-xl p-3 flex justify-between items-center">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
         </span>
-        <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">Verifikasi TF</span>
+        <div>
+          <p class="text-xs font-semibold text-emerald-400">Pesanan Sedang Diproses</p>
+          <p id="activeOrderText" class="text-[11px] text-slate-400">Menunggu konfirmasi admin...</p>
+        </div>
       </div>
-      <div id="adminOrdersList" class="space-y-2.5 text-xs">
-        <!-- Rendered via JS -->
-      </div>
+      <button onclick="openModal('statusModal')" class="text-xs bg-emerald-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg hover:bg-emerald-400 transition">
+        Lihat Status
+      </button>
     </div>
 
-    <!-- PREVIEW ULASAN TERKINI -->
-    <div class="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
-      <div class="flex justify-between items-center mb-3">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-comments text-green-400 text-xs"></i>
-          <h3 class="text-xs font-bold text-gray-200 uppercase tracking-wider">Ulasan Pembeli Terverifikasi</h3>
+    <!-- Daftar Produk -->
+    <section class="space-y-3">
+      <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+        <i class="fa-solid fa-fire text-orange-400"></i> Pilih Paket Jasbug
+      </h3>
+
+      <!-- Item 1 -->
+      <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 flex items-center justify-between hover:border-emerald-500/50 transition">
+        <div>
+          <h4 class="font-bold text-white text-sm">Paket Jasbug Hemat</h4>
+          <p class="text-xs text-slate-400 mt-0.5">Selesai kilat 5-10 menit</p>
+          <p class="text-emerald-400 font-bold text-sm mt-1">Rp 10.000</p>
         </div>
-        <button onclick="openModal('reviewModal')" class="text-xs text-green-400 hover:underline font-medium flex items-center gap-1">
-          Lihat Semua <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <button onclick="selectProduct('Paket Jasbug Hemat', 10000)" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition">
+          Beli Now
         </button>
       </div>
-      <div id="recentReviewsContainer" class="space-y-2 text-xs text-gray-400">
-        <!-- Rendered via JS -->
+
+      <!-- Item 2 -->
+      <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-4 flex items-center justify-between hover:border-emerald-500/50 transition">
+        <div>
+          <h4 class="font-bold text-white text-sm">Paket Jasbug VIP</h4>
+          <p class="text-xs text-slate-400 mt-0.5">Garansi & Prioritas Utama</p>
+          <p class="text-emerald-400 font-bold text-sm mt-1">Rp 25.000</p>
+        </div>
+        <button onclick="selectProduct('Paket Jasbug VIP', 25000)" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition">
+          Beli Now
+        </button>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <footer class="text-center text-xs text-gray-600 mt-8 py-4">
-    &copy; 2026 Jasbug Online System. All rights reserved.
-  </footer>
-
-
-  <!-- FLOATING WIDGET BILA ORDER BELUM DIBAYAR -->
-  <div id="pendingFloatingBar" class="hidden fixed bottom-4 left-4 right-4 max-w-2xl mx-auto bg-gray-900 border border-amber-500/50 rounded-2xl p-3.5 shadow-2xl z-40 backdrop-blur-md flex items-center justify-between gap-3">
-    <div class="flex items-center gap-3 overflow-hidden">
-      <div class="bg-amber-500/20 text-amber-400 p-2.5 rounded-xl border border-amber-500/30 shrink-0">
-        <i class="fa-solid fa-triangle-exclamation text-base"></i>
-      </div>
-      <div class="overflow-hidden">
-        <div class="text-xs font-bold text-white truncate">Pesanan Belum Dibayar</div>
-        <div class="text-[11px] text-gray-400 truncate" id="pendingSummaryText">0 Nomor Target • Rp0</div>
-      </div>
-    </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <button onclick="cancelPendingOrder()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold px-2.5 py-2 rounded-xl transition">
-        Batal
-      </button>
-      <button onclick="resumePayment()" class="text-xs bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
-        <i class="fa-solid fa-wallet"></i> Bayar
-      </button>
-    </div>
-  </div>
-
-
-  <!-- MODAL FORM ORDER JASBUG -->
-  <div id="orderModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
-      <button onclick="closeModal('orderModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+  <!-- MODAL 1: PEMBAYARAN -->
+  <div id="paymentModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-5 space-y-4 relative">
+      <button onclick="closeModal('paymentModal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center space-x-2 text-green-400 mb-1">
-        <i class="fa-solid fa-shield-halved text-lg"></i>
-        <h3 class="font-bold text-lg text-white">Form Order Jasbug</h3>
-      </div>
-      <p class="text-xs text-gray-400 mb-4">Pilih jenis bug dan masukkan nomor target. Rp2.000/nomor.</p>
-
-      <form id="jasbugForm" onsubmit="proceedToPayment(event)" class="space-y-4 overflow-y-auto pr-1 flex-1">
-        
-        <!-- TARGET LIST CONTAINER -->
-        <div class="space-y-3" id="targetListContainer">
-          <!-- Item 1 Target -->
+      <h3 class="font-bold text-base text-white">Pembayaran QRIS / Dana</h3>
+      
+      <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700 text-xs space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Produk:</span>
+          <span id="payProductName" class="font-bold text-white">-</span>
         </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Total Pembayaran:</span>
+          <span id="payAmount" class="font-bold text-emerald-400">-</span>
+        </div>
+      </div>
+
+      <!-- Info Rekening/E-Wallet -->
+      <div class="bg-slate-700/40 p-3 rounded-xl border border-slate-600 text-center space-y-1">
+        <p class="text-xs text-slate-300">Transfer ke DANA/GOPAY/QRIS:</p>
+        <p class="font-mono font-bold text-base text-emerald-300 select-all">081234567890</p>
+        <p class="text-[11px] text-slate-400">a.n NOPAL OFFICIAL</p>
+      </div>
+
+      <!-- Input Detail Pemesan -->
+      <div class="space-y-2 text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">Nama / Username Anda:</label>
+          <input type="text" id="buyerNameInput" placeholder="Contoh: NopalUser" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-emerald-500">
+        </div>
+      </div>
+
+      <button onclick="confirmPaymentSubmit()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-emerald-500/20">
+        <i class="fa-solid fa-paper-plane mr-1"></i> Saya Sudah Transfer
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL 2: STATUS PESANAN PELANGGAN (REALTIME) -->
+  <div id="statusModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-sm p-6 text-center space-y-4 relative">
+      <button onclick="closeModal('statusModal')" class="absolute top-3 right-3 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- Tampilan Menunggu Konfirmasi -->
+      <div id="statusPendingBox" class="space-y-3">
+        <div class="inline-flex p-3 bg-amber-500/10 rounded-full text-amber-400">
+          <i class="fa-solid fa-clock-rotate-left text-3xl animate-spin"></i>
+        </div>
+        <h3 class="font-bold text-lg text-white">Menunggu Konfirmasi Admin</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Sistem sedang memproses transaksi Anda. Admin akan memverifikasi dalam beberapa saat...
+        </p>
+      </div>
+
+      <!-- Tampilan Sukses (Setelah Admin Klik Terima) -->
+      <div id="statusDoneBox" class="space-y-3 hidden">
+        <div class="inline-flex p-3 bg-emerald-500/10 rounded-full text-emerald-400">
+          <i class="fa-solid fa-circle-check text-4xl"></i>
+        </div>
+        <h3 class="font-bold text-lg text-emerald-400">Akses Berhasil Diterima!</h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Pembayaran Anda telah disetujui admin. Silakan ambil link/akses grup Jasbug Anda di bawah ini:
+        </p>
+        <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Jasbug,%20akses%20saya%20sudah%20diterima" target="_blank" class="inline-block w-full bg-emerald-500 text-slate-950 font-bold text-xs py-2.5 rounded-xl hover:bg-emerald-400 transition">
+          <i class="fa-brands fa-whatsapp text-sm mr-1"></i> Ambil Akses via WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL ADMIN (TERSEMBUNYI) -->
+  <div id="adminPanelModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-md p-5 space-y-4 max-h-[90vh] flex flex-col relative">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+        <h3 class="font-bold text-base text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-shield text-amber-400"></i> Panel Admin Jasbug
+        </h3>
+        <button onclick="closeModal('adminPanelModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="overflow-y-auto space-y-2 flex-1 pr-1" id="adminOrdersList">
+        <p class="text-xs text-slate-400 text-center py-6">Memuat data pesanan...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // 1. Inisialisasi Firebase Database Public Service
+    const firebaseConfig = {
+      databaseURL: "https://jasbug-db-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let selectedProductData = null;
+    let activeOrderId = localStorage.getItem('active_jasbug_order_id');
+
+    // 2. Fungsi Pilih Produk
+    function selectProduct(name, price) {
+      selectedProductData = { name, price };
+      document.getElementById('payProductName').innerText = name;
+      document.getElementById('payAmount').innerText = 'Rp ' + price.toLocaleString('id-ID');
+      openModal('paymentModal');
+    }
+
+    // 3. Fungsi Submit Pesanan oleh Pelanggan
+    function confirmPaymentSubmit() {
+      const buyerName = document.getElementById('buyerNameInput').value.trim();
+      if (!buyerName) {
+        alert("Harap masukkan nama/username Anda!");
+        return;
+      }
+
+      const newOrderRef = db.ref('orders').push();
+      const orderId = newOrderRef.key;
+
+      const orderData = {
+        id: orderId,
+        buyerName: buyerName,
+        productName: selectedProductData.name,
+        price: selectedProductData.price,
+        status: "WAITING_ADMIN",
+        timestamp: Date.now()
+      };
+
+      newOrderRef.set(orderData).then(() => {
+        localStorage.setItem('active_jasbug_order_id', orderId);
+        activeOrderId = orderId;
+        closeModal('paymentModal');
+        updateActiveNoticeText("Menunggu konfirmasi admin...");
+        listenToOrderStatus(orderId);
+        openModal('statusModal');
+      });
+    }
+
+    // 4. Realtime Listener untuk Pelanggan
+    function listenToOrderStatus(orderId) {
+      if (!orderId) return;
+
+      document.getElementById('activeOrderNotice').classList.remove('hidden');
+
+      db.ref('orders/' + orderId).on('value', (snapshot) => {
+        const order = snapshot.val();
+        if (!order) return;
+
+        if (order.status === "WAITING_ADMIN") {
+          document.getElementById('statusPendingBox').classList.remove('hidden');
+          document.getElementById('statusDoneBox').classList.add('hidden');
+          updateActiveNoticeText("Menunggu konfirmasi admin...");
+        } else if (order.status === "DONE") {
+          document.getElementById('statusPendingBox').classList.add('hidden');
+          document.getElementById('statusDoneBox').classList.remove('hidden');
+          updateActiveNoticeText("Akses telah disetujui Admin! Klik untuk lihat.");
+        }
+      });
+    }
+
+    function updateActiveNoticeText(text) {
+      document.getElementById('activeOrderText').innerText = text;
+    }
+
+    // 5. Panel Admin Realtime Order List
+    function toggleAdminPanel() {
+      openModal('adminPanelModal');
+      loadAdminOrders();
+    }
+
+    function loadAdminOrders() {
+      db.ref('orders').on('value', (snapshot) => {
+        const orders = snapshot.val();
+        const container = document.getElementById('adminOrdersList');
+        container.innerHTML = '';
+
+        if (!orders) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Belum ada pesanan masuk.</p>';
+          return;
+        }
+
+        const keys = Object.keys(orders).reverse();
+        keys.forEach(key => {
+          const item = orders[key];
+          const card = document.createElement('div');
+          card.className = "bg-slate-900 border border-slate-700 p-3 rounded-xl space-y-2 text-xs";
+          
+          const time = new Date(item.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+
+          card.innerHTML = `
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-bold text-white">${item.buyerName} <span class="text-[10px] text-slate-400">(${time})</span></p>
+                <p class="text-emerald-400 font-semibold">${item.productName} - Rp ${item.price.toLocaleString('id-ID')}</p>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] rounded ${item.status === 'WAITING_ADMIN' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+                ${item.status === 'WAITING_ADMIN' ? 'Menunggu' : 'Disetujui'}
+              </span>
+            </div>
+            ${item.status === 'WAITING_ADMIN' ? `
+              <button onclick="approveOrder('${key}')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-1.5 rounded-lg transition">
+                <i class="fa-solid fa-check mr-1"></i> Terima Akses Pelanggan
+              </button>
+            ` : '<p class="text-[11px] text-slate-400 text-center">Transaksi Selesai</p>'}
+          `;
+          container.appendChild(card);
+        });
+      });
+    }
+
+    // 6. Admin Klik "Terima Akses"
+    function approveOrder(orderId) {
+      db.ref('orders/' + orderId).update({
+        status: "DONE"
+      }).then(() => {
+        alert("Sukses! Akses pelanggan berhasil disetujui.");
+      });
+    }
+
+    // Helper Modal
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Auto-check session saat website dibuka
+    window.addEventListener('DOMContentLoaded', () => {
+      if (activeOrderId) {
+        listenToOrderStatus(activeOrderId);
+      }
+    });
+  </script>
+</body>
+</html>v>
 
         <button type="button" onclick="addTargetInput()" class="w-full bg-gray-800/80 hover:bg-gray-800 border border-dashed border-gray-700 text-gray-300 font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-plus text-green-400"></i> Tambah Target Nomor Lain
