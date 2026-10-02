@@ -9,11 +9,6 @@
   <!-- Font Plus Jakarta Sans & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Firebase SDK (Compat Version) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -70,7 +65,7 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <button id="adminBtn" onclick="openModal('adminPanelModal')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
+        <button id="adminBtn" onclick="toggleAdminLogin()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
           <i class="fa-solid fa-shield-halved text-green-400"></i>
           <span id="adminBtnText">Akses Pemilik</span>
         </button>
@@ -91,307 +86,828 @@
     <!-- POSTER INFORMASI LIVE -->
     <div class="relative group rounded-2xl overflow-hidden border border-gray-800 bg-gray-900 mb-6 shadow-xl">
       <img id="posterImg" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="Poster Informasi" class="w-full h-48 object-cover opacity-60">
-      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-900/40 to-transparent p-5 flex flex-col justify-end">
-        <span class="text-[10px] bg-green-500/20 text-green-400 border border-green-500/30 font-bold px-2.5 py-1 rounded-full w-fit mb-2">OFFICIAL SERVICE</span>
-        <h2 class="text-lg font-bold text-white leading-snug">Jasa Bug WhatsApp & Akun Terpercaya</h2>
-        <p class="text-xs text-gray-300 mt-1">Proses kilat, langsung otomatis terverifikasi oleh admin.</p>
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent p-5 flex flex-col justify-end">
+        <span class="bg-green-500/20 text-green-400 text-[10px] font-bold px-2.5 py-0.5 rounded-full w-fit border border-green-500/30 mb-2">INFO TERKINI</span>
+        <h2 id="posterTitle" class="text-xl font-bold text-white mb-1">Layanan Jasbug Online Otomatis</h2>
+        <p id="posterDesc" class="text-xs text-gray-300 line-clamp-2">Proses cepat, aman, dan bergaransi. Pilih jenis bug sesuai kebutuhan target Anda di bawah ini.</p>
       </div>
-    </div>
 
-    <!-- NOTIFIKASI PESANAN AKTIF PELANGGAN -->
-    <div id="activeOrderNotice" class="hidden bg-gray-900 border border-green-500/40 rounded-2xl p-4 mb-6 flex justify-between items-center shadow-lg">
-      <div class="flex items-center space-x-3">
-        <span class="relative flex h-3 w-3">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-        </span>
-        <div>
-          <p class="text-xs font-bold text-green-400">Status Pesanan Aktif</p>
-          <p id="activeOrderText" class="text-[11px] text-gray-400">Menunggu verifikasi admin...</p>
-        </div>
-      </div>
-      <button onclick="openModal('statusModal')" class="text-xs bg-green-500 hover:bg-green-400 text-gray-950 font-bold px-3 py-2 rounded-xl transition">
-        Cek Status
+      <button id="editPosterBtn" onclick="openModal('editPosterModal')" class="hidden absolute top-3 right-3 bg-green-500 text-black font-semibold text-xs px-3 py-1.5 rounded-xl shadow-lg hover:bg-green-400 flex items-center gap-1 transition">
+        <i class="fa-solid fa-pen-to-square"></i> Setting Poster
       </button>
     </div>
 
-    <!-- DAFTAR LAYANAN -->
-    <div class="space-y-3 mb-6">
-      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-        <i class="fa-solid fa-bolt text-amber-400"></i> Pilih Layanan Jasbug
-      </h3>
-
-      <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 flex justify-between items-center hover:border-green-500/40 transition">
-        <div>
-          <h4 class="font-bold text-sm text-white">Jasbug Paket Basic</h4>
-          <p class="text-xs text-gray-400 mt-0.5">Proses standar 5-15 menit</p>
-          <p class="text-green-400 font-extrabold text-sm mt-1">Rp 10.000</p>
+    <!-- TOMBOL UTAMA & FITUR ULASAN -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <button onclick="openOrderModal()" class="bg-gradient-to-br from-green-500 to-emerald-700 hover:from-green-400 hover:to-emerald-600 text-gray-950 font-extrabold p-5 rounded-2xl shadow-lg border border-green-400/50 flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
+        <div class="bg-gray-950/20 p-3 rounded-xl">
+          <i class="fa-solid fa-bolt text-2xl text-gray-950"></i>
         </div>
-        <button onclick="selectProduct('Jasbug Paket Basic', 10000)" class="bg-green-500 hover:bg-green-400 text-gray-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-lg shadow-green-500/10">
-          Order Now
+        <span class="text-lg">Order Jasbug</span>
+        <span class="text-[10px] font-medium bg-black/20 px-2.5 py-0.5 rounded-full">Rp2.000 / Nomor</span>
+      </button>
+
+      <button onclick="openModal('reviewModal')" class="bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-green-500/40 text-white font-extrabold p-5 rounded-2xl shadow-lg flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
+        <div class="bg-green-500/10 p-3 rounded-xl border border-green-500/20">
+          <i class="fa-solid fa-star text-2xl text-amber-400"></i>
+        </div>
+        <span class="text-base">Ulasan Pelanggan</span>
+        <div class="flex items-center space-x-1 text-[11px] text-amber-400 font-medium">
+          <i class="fa-solid fa-star"></i>
+          <span id="avgRatingDisplay">5.0 / 5.0</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- PANEL KHUSUS ADMIN DAFTAR PESANAN MASUK -->
+    <div id="adminPanelOrders" class="hidden mb-6 bg-gray-900 border border-amber-500/40 rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+          <i class="fa-solid fa-list-check"></i> Pesanan Masuk (Admin Mode)
+        </span>
+        <span class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">Verifikasi TF</span>
+      </div>
+      <div id="adminOrdersList" class="space-y-2.5 text-xs">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- PREVIEW ULASAN TERKINI -->
+    <div class="bg-gray-900/60 border border-gray-800 rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-comments text-green-400 text-xs"></i>
+          <h3 class="text-xs font-bold text-gray-200 uppercase tracking-wider">Ulasan Pembeli Terverifikasi</h3>
+        </div>
+        <button onclick="openModal('reviewModal')" class="text-xs text-green-400 hover:underline font-medium flex items-center gap-1">
+          Lihat Semua <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
-
-      <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 flex justify-between items-center hover:border-green-500/40 transition">
-        <div>
-          <h4 class="font-bold text-sm text-white">Jasbug Paket VIP Premium</h4>
-          <p class="text-xs text-gray-400 mt-0.5">Prioritas Utama + Garansi</p>
-          <p class="text-green-400 font-extrabold text-sm mt-1">Rp 25.000</p>
-        </div>
-        <button onclick="selectProduct('Jasbug Paket VIP Premium', 25000)" class="bg-green-500 hover:bg-green-400 text-gray-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-lg shadow-green-500/10">
-          Order Now
-        </button>
+      <div id="recentReviewsContainer" class="space-y-2 text-xs text-gray-400">
+        <!-- Rendered via JS -->
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="text-center text-xs text-gray-500 pt-4 border-t border-gray-800/80">
-    <p>&copy; 2026 Nopal Jasbug Store. Realtime Sync System Active.</p>
+  <footer class="text-center text-xs text-gray-600 mt-8 py-4">
+    &copy; 2026 Jasbug Online System. All rights reserved.
   </footer>
 
-  <!-- MODAL PEMBAYARAN -->
-  <div id="paymentModal" class="fixed inset-0 bg-black/80 z-50 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-5 space-y-4 modal-content relative">
-      <button onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+
+  <!-- FLOATING WIDGET BILA ORDER BELUM DIBAYAR -->
+  <div id="pendingFloatingBar" class="hidden fixed bottom-4 left-4 right-4 max-w-2xl mx-auto bg-gray-900 border border-amber-500/50 rounded-2xl p-3.5 shadow-2xl z-40 backdrop-blur-md flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 overflow-hidden">
+      <div class="bg-amber-500/20 text-amber-400 p-2.5 rounded-xl border border-amber-500/30 shrink-0">
+        <i class="fa-solid fa-triangle-exclamation text-base"></i>
+      </div>
+      <div class="overflow-hidden">
+        <div class="text-xs font-bold text-white truncate">Pesanan Belum Dibayar</div>
+        <div class="text-[11px] text-gray-400 truncate" id="pendingSummaryText">0 Nomor Target • Rp0</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="cancelPendingOrder()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold px-2.5 py-2 rounded-xl transition">
+        Batal
+      </button>
+      <button onclick="resumePayment()" class="text-xs bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
+        <i class="fa-solid fa-wallet"></i> Bayar
+      </button>
+    </div>
+  </div>
+
+
+  <!-- MODAL FORM ORDER JASBUG -->
+  <div id="orderModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
+      <button onclick="closeModal('orderModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <h3 class="font-bold text-base text-white">Detail Pembayaran</h3>
+      <div class="flex items-center space-x-2 text-green-400 mb-1">
+        <i class="fa-solid fa-shield-halved text-lg"></i>
+        <h3 class="font-bold text-lg text-white">Form Order Jasbug</h3>
+      </div>
+      <p class="text-xs text-gray-400 mb-4">Pilih jenis bug dan masukkan nomor target. Rp2.000/nomor.</p>
+
+      <form id="jasbugForm" onsubmit="proceedToPayment(event)" class="space-y-4 overflow-y-auto pr-1 flex-1">
+        
+        <!-- TARGET LIST CONTAINER -->
+        <div class="space-y-3" id="targetListContainer">
+          <!-- Item Target Dynamic -->
+        </div>
+
+        <button type="button" onclick="addTargetInput()" class="w-full bg-gray-800/80 hover:bg-gray-800 border border-dashed border-gray-700 text-gray-300 font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus text-green-400"></i> Tambah Target Nomor Lain
+        </button>
+
+        <!-- RINGKASAN HARGA & KETERANGAN -->
+        <div class="bg-gray-950 p-3.5 rounded-xl border border-green-500/30 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-gray-400 font-medium">Total Tagihan:</span>
+            <span id="orderTotalText" class="text-base font-extrabold text-green-400">Rp2.000</span>
+          </div>
+          <div class="text-[11px] text-green-300/90 font-medium flex items-start gap-1.5 leading-snug">
+            <i class="fa-solid fa-rotate text-green-400 shrink-0 mt-0.5"></i>
+            <span>(2x kirim bug setelah bug pertama berhasil dikirim, jeda 5 menit)</span>
+          </div>
+        </div>
+
+        <!-- Catatan Tambahan -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">CATATAN TAMBAHAN (OPSIONAL)</label>
+          <textarea id="orderNote" rows="2" placeholder="Instruksi khusus jika ada..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-green-500 resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+          Lanjut Pembayaran <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL PEMBAYARAN QRIS & UPLOAD BUKTI -->
+  <div id="paymentModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
+      <button onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center space-x-2 text-amber-400 mb-1">
+        <i class="fa-solid fa-qrcode text-lg"></i>
+        <h3 class="font-bold text-lg text-white">Pembayaran QRIS</h3>
+      </div>
+      <p class="text-xs text-gray-400 mb-4">Scan QRIS menggunakan e-Wallet / M-Banking Anda.</p>
+
+      <div class="space-y-4 overflow-y-auto pr-1 flex-1">
+        <!-- TOTAL NOMINAL REK -->
+        <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl text-center">
+          <div class="text-[11px] text-amber-300 font-semibold uppercase">Total Transfer</div>
+          <div id="qrisTotalAmount" class="text-2xl font-extrabold text-amber-400 font-mono">Rp2.000</div>
+          <div class="text-[10px] text-gray-400 mt-0.5">Transfer sesuai nominal persis di atas</div>
+        </div>
+
+        <!-- GAMBAR QRIS ALL PAYMENT -->
+        <div class="bg-white p-3 rounded-2xl flex flex-col items-center justify-center border border-gray-700">
+          <img id="qrisImage" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=QRIS_ALL_PAYMENT_JASBUG_ONLINE" alt="QRIS All Payment" class="w-48 h-48 object-contain">
+          <span class="text-[10px] font-bold text-gray-800 mt-1">QRIS ALL PAYMENT (DANA, OVO, GOPAY, SHOPEEPAY, BANK)</span>
+        </div>
+
+        <!-- CARA TRANSFER -->
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 text-[11px] text-gray-300 space-y-1">
+          <div class="font-bold text-white mb-1">Cara Pembayaran:</div>
+          <ol class="list-decimal pl-4 space-y-0.5">
+            <li>Buka aplikasi e-wallet / mobile banking kamu.</li>
+            <li>Pilih menu <b>Scan / Bayar QRIS</b>.</li>
+            <li>Arahkan ke gambar QRIS di atas & masukkan nominal pas.</li>
+            <li>Selesaikan pembayaran dan <b>Screenshot Bukti Transfer</b>.</li>
+          </ol>
+        </div>
+
+        <!-- FORM UPLOAD BUKTI TF -->
+        <div class="space-y-2 pt-1">
+          <label class="block text-xs font-semibold text-gray-300">UPLOAD BUKTI TRANSFER (WAJIB)</label>
+          <input type="file" id="proofFileInput" accept="image/*" class="w-full bg-gray-950 border border-gray-800 text-xs text-gray-300 rounded-xl p-2.5 focus:outline-none focus:border-green-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-500/20 file:text-green-400 hover:file:bg-green-500/30">
+          
+          <button onclick="submitProofOfPayment()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 mt-3">
+            <i class="fa-solid fa-paper-plane"></i> Kirim Bukti Transfer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL STATUS PROGRESS ORDERAN -->
+  <div id="statusModal" class="modal-backdrop fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative text-center">
       
-      <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs space-y-2">
-        <div class="flex justify-between">
-          <span class="text-gray-400">Layanan:</span>
-          <span id="payProductName" class="font-bold text-white">-</span>
+      <!-- STATUS 1: MENUNGGU VERIFIKASI -->
+      <div id="statusPendingBox" class="space-y-4">
+        <div class="w-16 h-16 bg-amber-500/20 border border-amber-500/40 rounded-full flex items-center justify-center mx-auto text-amber-400">
+          <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-400">Total Harga:</span>
-          <span id="payAmount" class="font-bold text-green-400">-</span>
+        <div>
+          <h3 class="text-lg font-bold text-white">Menunggu Konfirmasi Admin</h3>
+          <p class="text-xs text-gray-400 mt-1">Bukti transfer Anda telah terkirim. Admin sedang memverifikasi pembayaran.</p>
+        </div>
+        <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 text-xs text-gray-300">
+          <i class="fa-solid fa-clock text-amber-400 mr-1"></i> Proses pengecekan tidak lama, <b>paling lambat 5 menit</b>.
         </div>
       </div>
 
-      <div class="bg-gray-800/50 p-3 rounded-xl border border-gray-700/50 text-center space-y-1">
-        <p class="text-[11px] text-gray-300">Tujuan Transfer DANA/GOPAY:</p>
-        <p class="font-mono font-bold text-base text-green-400 select-all">081234567890</p>
-        <p class="text-[10px] text-gray-400">a.n NOPAL JASBUG</p>
-      </div>
-
-      <div class="space-y-2 text-xs">
-        <label class="block text-gray-300">Nama / Username Pembeli:</label>
-        <input type="text" id="buyerNameInput" placeholder="Masukkan nama Anda..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-white focus:outline-none focus:border-green-500">
-      </div>
-
-      <button onclick="confirmPaymentSubmit()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-green-500/20">
-        <i class="fa-solid fa-paper-plane mr-1"></i> Konfirmasi Pembayaran
-      </button>
-    </div>
-  </div>
-
-  <!-- MODAL STATUS REALTIME PELANGGAN -->
-  <div id="statusModal" class="fixed inset-0 bg-black/80 z-50 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-sm p-6 text-center space-y-4 modal-content relative">
-      <button onclick="closeModal('statusModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <!-- MENUNGGU CONFIRMATION -->
-      <div id="statusPendingBox" class="space-y-3">
-        <div class="inline-flex p-3 bg-amber-500/10 rounded-full text-amber-400">
-          <i class="fa-solid fa-hourglass-half text-3xl animate-spin"></i>
+      <!-- STATUS 2: BUG DALAM PERJALANAN (DONE) -->
+      <div id="statusDoneBox" class="hidden space-y-4">
+        <div class="w-16 h-16 bg-green-500/20 border border-green-500/40 rounded-full flex items-center justify-center mx-auto text-green-400">
+          <i class="fa-solid fa-paper-plane text-2xl animate-bounce"></i>
         </div>
-        <h3 class="font-bold text-base text-white">Menunggu Konfirmasi Admin</h3>
-        <p class="text-xs text-gray-400 leading-relaxed">
-          Pesanan kamu sedang diproses. Jangan tutup halaman ini, status akan ter-update otomatis saat disetujui admin!
-        </p>
-      </div>
-
-      <!-- SUKSES (DIKONFIRMASI ADMIN) -->
-      <div id="statusDoneBox" class="space-y-3 hidden">
-        <div class="inline-flex p-3 bg-green-500/10 rounded-full text-green-400">
-          <i class="fa-solid fa-circle-check text-4xl"></i>
+        <div>
+          <h3 class="text-lg font-bold text-white">Bug Dalam Perjalanan!</h3>
+          <p class="text-xs text-gray-300 mt-1">Pembayaran telah dikonfirmasi. Server sedang mengirimkan paket bug ke nomor target Anda.</p>
         </div>
-        <h3 class="font-bold text-base text-green-400">Pesanan Berhasil Disetujui!</h3>
-        <p class="text-xs text-gray-300 leading-relaxed">
-          Admin telah mengonfirmasi transaksi kamu. Silakan ambil akses/layanan kamu sekarang:
-        </p>
-        <a href="https://wa.me/6281234567890?text=Halo%20Admin,%20pesanan%20saya%20sudah%20dikonfirmasi" target="_blank" class="inline-block w-full bg-green-500 text-gray-950 font-bold text-xs py-3 rounded-xl hover:bg-green-400 transition">
-          <i class="fa-brands fa-whatsapp text-sm mr-1"></i> Klaim Akses via WhatsApp
+        
+        <div class="bg-gray-950 p-3.5 rounded-xl border border-green-500/30 text-xs text-green-300 space-y-1 text-left">
+          <div class="font-bold flex items-center gap-1.5 text-green-400">
+            <i class="fa-solid fa-circle-check"></i> Pesanan Diproses
+          </div>
+          <div>• Estimasi Tercepat: <b>5 Menit</b></div>
+          <div>• Estimasi Paling Lambat: <b>20 Menit</b></div>
+        </div>
+
+        <!-- AKSES KHUSUS BERI ULASAN SETELAH ORDER DONE -->
+        <div class="bg-gray-950 p-3.5 rounded-xl border border-amber-500/30 space-y-2">
+          <div class="text-xs font-bold text-amber-400 flex items-center justify-center gap-1">
+            <i class="fa-solid fa-star"></i> Berikan Ulasan Anda
+          </div>
+          <p class="text-[11px] text-gray-400">Bagaimana pengalaman layanan Jasbug kami?</p>
+          <button onclick="openReviewFromDoneOrder()" class="w-full bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold py-2 rounded-xl text-xs transition">
+            Tulis Ulasan Pelanggan
+          </button>
+        </div>
+
+        <!-- TOMBOL BANDING WA -->
+        <a id="waBandingBtn" href="https://wa.me/6285196944516" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-xs">
+          <i class="fa-brands fa-whatsapp text-base"></i> Kendala / Ajukan Banding via WhatsApp
         </a>
-      </div>
-    </div>
-  </div>
 
-  <!-- PANEL ADMIN -->
-  <div id="adminPanelModal" class="fixed inset-0 bg-black/80 z-50 modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md p-5 space-y-4 modal-content relative max-h-[85vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-        <h3 class="font-bold text-sm text-white flex items-center gap-2">
-          <i class="fa-solid fa-user-shield text-amber-400"></i> Panel Pemilik / Admin
-        </h3>
-        <button onclick="closeModal('adminPanelModal')" class="text-gray-400 hover:text-white">
-          <i class="fa-solid fa-xmark text-lg"></i>
+        <button onclick="closeModal('statusModal')" class="text-xs text-gray-500 hover:underline block mx-auto pt-1">
+          Tutup Halaman Ini
         </button>
       </div>
 
-      <div id="adminOrdersList" class="overflow-y-auto space-y-2 flex-1 pr-1">
-        <p class="text-xs text-gray-400 text-center py-6">Memuat daftar pesanan masuk...</p>
+    </div>
+  </div>
+
+
+  <!-- MODAL FITUR ULASAN PELANGGAN -->
+  <div id="reviewModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl relative max-h-[85vh] flex flex-col">
+      <button onclick="closeModal('reviewModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center space-x-2 text-amber-400 mb-1">
+        <i class="fa-solid fa-star text-lg"></i>
+        <h3 class="font-bold text-lg text-white">Ulasan Pelanggan Terverifikasi</h3>
+      </div>
+      <p class="text-xs text-gray-400 mb-4">Ulasan asli dari pembeli yang sukses order di Jasbug.</p>
+
+      <!-- FORM TULIS ULASAN -->
+      <div id="reviewFormSection" class="bg-gray-950 p-4 rounded-2xl border border-gray-800 mb-4">
+        <!-- UNLOCKED / LOCKED STATE HANYA DARI DISINI -->
+        <div id="reviewLockedBox" class="text-center py-2 space-y-1">
+          <div class="text-amber-400 text-xs font-bold flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-lock"></i> Fitur Ulasan Dibatasi
+          </div>
+          <p class="text-[11px] text-gray-400">Untuk menjaga keaslian ulasan, hanya pelanggan yang telah menyelesaikan transaksi order yang dapat memberikan rating & ulasan.</p>
+        </div>
+
+        <div id="reviewInputBox" class="hidden space-y-3">
+          <div class="text-xs font-bold text-green-400 flex items-center justify-between">
+            <span>TULIS ULASAN PEMBELI</span>
+            <span class="text-[10px] bg-green-500/20 px-2 py-0.5 rounded-full">Order Terverifikasi</span>
+          </div>
+          
+          <div class="flex items-center gap-1" id="starRatingInput">
+            <button type="button" onclick="setRating(1)" class="star-btn text-amber-400"><i class="fa-solid fa-star text-xl"></i></button>
+            <button type="button" onclick="setRating(2)" class="star-btn text-amber-400"><i class="fa-solid fa-star text-xl"></i></button>
+            <button type="button" onclick="setRating(3)" class="star-btn text-amber-400"><i class="fa-solid fa-star text-xl"></i></button>
+            <button type="button" onclick="setRating(4)" class="star-btn text-amber-400"><i class="fa-solid fa-star text-xl"></i></button>
+            <button type="button" onclick="setRating(5)" class="star-btn text-amber-400"><i class="fa-solid fa-star text-xl"></i></button>
+            <span id="ratingScoreText" class="text-xs font-bold text-amber-400 ml-2">5.0 / 5</span>
+          </div>
+
+          <input type="text" id="reviewerName" placeholder="Nama Anda (opsional)" class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-green-500">
+          <textarea id="reviewerComment" rows="2" placeholder="Tuliskan pengalaman Anda..." class="w-full bg-gray-900 border border-gray-800 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-green-500 resize-none"></textarea>
+          <button onclick="submitReview()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-check"></i> Kirim Ulasan Publik
+          </button>
+        </div>
+      </div>
+
+      <!-- DAFTAR ULASAN -->
+      <div class="overflow-y-auto flex-1 space-y-2.5 pr-1" id="allReviewsList">
+        <!-- Render via JavaScript -->
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT LOGIC FIREBASE & UTILITIES -->
+
+  <!-- MODAL EDIT POSTER (ADMIN) -->
+  <div id="editPosterModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+      <button onclick="closeModal('editPosterModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <h3 class="font-bold text-lg text-white mb-4">Setting Poster Informasi</h3>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">URL GAMBAR POSTER</label>
+          <input type="text" id="editImgUrl" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">JUDUL POSTER</label>
+          <input type="text" id="editTitle" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1">DESKRIPSI INFORMASI</label>
+          <textarea id="editDesc" rows="3" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:border-green-500 resize-none"></textarea>
+        </div>
+        <button onclick="savePosterSettings()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl transition">
+          Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATION FLOATING -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 border border-green-500/50 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 z-50">
+    <i class="fa-solid fa-circle-check text-green-400 text-base"></i>
+    <span id="toastMsg" class="text-xs font-medium">Berhasil!</span>
+  </div>
+
+
+  <!-- SCRIPT APLIKASI UTAMA -->
   <script>
-    // Config Firebase Realtime Database
-    const firebaseConfig = {
-      apiKey: "AIzaSyDWShTVRcnq68VfKQ-cTG5Qs0nZ_OnQqtc",
-      authDomain: "jasbug-db.firebaseapp.com",
-      databaseURL: "https://jasbug-db-default-rtdb.firebaseio.com",
-      projectId: "jasbug-db",
-      storageBucket: "jasbug-db.firebasestorage.app",
-      messagingSenderId: "492820823318",
-      appId: "1:492820823318:web:6a1608c5a2591df4b76437",
-      measurementId: "G-NW0HN7307F"
-    };
+    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
+    const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    let isAdmin = false;
+    const ADMIN_PASSWORD = "admin123";
+    let selectedRating = 5;
+    let targetCounter = 0;
+    let currentOrder = null;
+    let canUserReview = false;
 
-    let selectedProductData = null;
-    let activeOrderId = localStorage.getItem('active_jasbug_order_id');
+    let reviews = JSON.parse(localStorage.getItem('jasbug_reviews')) || [
+      { name: "Rian S.", rating: 5, comment: "Mantap parah, delaynya langsung berasa 5 menit pas!", date: "2 Jam lalu" },
+      { name: "Pelanggan #309", rating: 5, comment: "FC iOS ampuh banget tanpa jejak.", date: "5 Jam lalu" },
+      { name: "Dandi", rating: 4, comment: "Proses lumayan cepet, recommended lah harganya.", date: "1 Hari lalu" }
+    ];
 
-    // Jam Real-Time
-    function updateClock() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('id-ID', { hour12: false });
-      const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    let adminOrders = JSON.parse(localStorage.getItem('jasbug_admin_orders')) || [];
 
-      document.getElementById('clock').innerText = timeStr + " WIB";
-      document.getElementById('date').innerText = dateStr;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Modal Control
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-    }
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    // Submit Pembayaran Pelanggan
-    function selectProduct(name, price) {
-      selectedProductData = { name, price };
-      document.getElementById('payProductName').innerText = name;
-      document.getElementById('payAmount').innerText = 'Rp ' + price.toLocaleString('id-ID');
-      openModal('paymentModal');
+    function openModal(modalId) {
+      if(modalId === 'editPosterModal') {
+        document.getElementById('editImgUrl').value = document.getElementById('posterImg').src;
+        document.getElementById('editTitle').value = document.getElementById('posterTitle').innerText;
+        document.getElementById('editDesc').value = document.getElementById('posterDesc').innerText;
+      }
+      if(modalId === 'reviewModal') {
+        checkReviewEligibility();
+      }
+      document.getElementById(modalId).classList.add('active');
     }
 
-    function confirmPaymentSubmit() {
-      const name = document.getElementById('buyerNameInput').value.trim();
-      if (!name) {
-        alert("Harap masukkan nama/username Anda!");
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    function openOrderModal() {
+      const container = document.getElementById('targetListContainer');
+      if(container.children.length === 0) {
+        addTargetInput();
+      }
+      openModal('orderModal');
+    }
+
+    function addTargetInput() {
+      targetCounter++;
+      const container = document.getElementById('targetListContainer');
+      const itemDiv = document.createElement('div');
+      itemDiv.className = "target-item bg-gray-950 p-3 rounded-2xl border border-gray-800 space-y-2 relative";
+      itemDiv.id = `targetItem_${targetCounter}`;
+
+      itemDiv.innerHTML = `
+        <div class="flex justify-between items-center">
+          <span class="target-label text-xs font-bold text-green-400">Target</span>
+          <button type="button" onclick="removeTargetInput('${itemDiv.id}')" class="delete-btn text-[10px] text-red-400 hover:underline">Hapus</button>
+        </div>
+
+        <div>
+          <label class="block text-[10px] text-gray-400 mb-1">NOMOR TARGET BUG</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-xs font-bold">+62</span>
+            <input type="number" required placeholder="81234567890" class="target-number-input w-full bg-gray-900 border border-gray-800 rounded-xl py-2 pl-11 pr-3 text-xs text-white focus:outline-none focus:border-green-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] text-gray-400 mb-1">JENIS BUG</label>
+          <select class="target-type-select w-full bg-gray-900 border border-gray-800 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-green-500">
+            <option value="Bug Delay">Bug Delay (Android)</option>
+            <option value="FC iOS Invisible">FC iOS Invisible (iPhone/iOS)</option>
+          </select>
+        </div>
+      `;
+
+      container.appendChild(itemDiv);
+      reindexTargets();
+    }
+
+    function removeTargetInput(elementId) {
+      const el = document.getElementById(elementId);
+      if(el) el.remove();
+      reindexTargets();
+    }
+
+    function reindexTargets() {
+      const items = document.querySelectorAll('#targetListContainer .target-item');
+      items.forEach((item, index) => {
+        const label = item.querySelector('.target-label');
+        if(label) label.innerText = `Target #${index + 1}`;
+        
+        const deleteBtn = item.querySelector('.delete-btn');
+        if(deleteBtn) {
+          if(items.length === 1) {
+            deleteBtn.classList.add('hidden');
+          } else {
+            deleteBtn.classList.remove('hidden');
+          }
+        }
+      });
+      calculateTotalOrder();
+    }
+
+    function calculateTotalOrder() {
+      const items = document.querySelectorAll('#targetListContainer .target-item');
+      const count = items.length;
+      const total = count * 2000;
+      document.getElementById('orderTotalText').innerText = `Rp${total.toLocaleString('id-ID')}`;
+    }
+
+    function proceedToPayment(e) {
+      e.preventDefault();
+      const numberInputs = document.querySelectorAll('.target-number-input');
+      const typeSelects = document.querySelectorAll('.target-type-select');
+
+      let targets = [];
+      let isValid = true;
+
+      numberInputs.forEach((input, index) => {
+        if(!input.value.trim()) {
+          isValid = false;
+        }
+        targets.push({
+          number: input.value.trim(),
+          type: typeSelects[index].value
+        });
+      });
+
+      if(!isValid) {
+        alert("Harap isi semua nomor target!");
         return;
       }
 
-      document.getElementById('customerName').innerText = name;
+      const note = document.getElementById('orderNote').value.trim();
+      const total = targets.length * 2000;
 
-      const newRef = db.ref('orders').push();
-      const orderId = newRef.key;
-
-      const payload = {
-        id: orderId,
-        buyerName: name,
-        productName: selectedProductData.name,
-        price: selectedProductData.price,
-        status: "WAITING_ADMIN",
-        timestamp: Date.now()
+      currentOrder = {
+        id: "JASBUG-" + Date.now().toString().slice(-6),
+        targets: targets,
+        note: note,
+        total: total,
+        status: "PENDING_PAYMENT",
+        proofImg: null,
+        date: new Date().toLocaleTimeString('id-ID')
       };
 
-      newRef.set(payload).then(() => {
-        localStorage.setItem('active_jasbug_order_id', orderId);
-        activeOrderId = orderId;
-        closeModal('paymentModal');
-        listenToOrderStatus(orderId);
-        openModal('statusModal');
-      }).catch(err => alert("Gagal membuat pesanan: " + err.message));
+      closeModal('orderModal');
+      document.getElementById('qrisTotalAmount').innerText = `Rp${total.toLocaleString('id-ID')}`;
+      openModal('paymentModal');
+
+      showPendingBar();
     }
 
-    // Listener Realtime Status Pesanan Buyer
-    function listenToOrderStatus(orderId) {
-      if (!orderId) return;
+    function showPendingBar() {
+      if(!currentOrder || currentOrder.status !== "PENDING_PAYMENT") return;
+      document.getElementById('pendingSummaryText').innerText = `${currentOrder.targets.length} Target Nomor • Rp${currentOrder.total.toLocaleString('id-ID')}`;
+      document.getElementById('pendingFloatingBar').classList.remove('hidden');
+    }
 
-      document.getElementById('activeOrderNotice').classList.remove('hidden');
+    function hidePendingBar() {
+      document.getElementById('pendingFloatingBar').classList.add('hidden');
+    }
 
-      db.ref('orders/' + orderId).on('value', snapshot => {
-        const order = snapshot.val();
-        if (!order) return;
+    function resumePayment() {
+      openModal('paymentModal');
+    }
 
-        if (order.status === 'WAITING_ADMIN') {
-          document.getElementById('statusPendingBox').classList.remove('hidden');
-          document.getElementById('statusDoneBox').classList.add('hidden');
-          document.getElementById('activeOrderText').innerText = "Menunggu verifikasi admin...";
-        } else if (order.status === 'DONE') {
+    function cancelPendingOrder() {
+      if(confirm("Apakah Anda yakin ingin membatalkan pesanan ini?")) {
+        currentOrder = null;
+        hidePendingBar();
+        showToast("Pesanan dibatalkan.");
+      }
+    }
+
+    function submitProofOfPayment() {
+      const fileInput = document.getElementById('proofFileInput');
+      if(fileInput.files.length === 0) {
+        alert("Harap pilih foto screenshot bukti transfer terlebih dahulu!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const base64Img = e.target.result;
+        currentOrder.proofImg = base64Img;
+        currentOrder.status = "WAITING_ADMIN";
+
+        adminOrders.unshift(currentOrder);
+        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+        renderAdminOrders();
+
+        sendTelegramNotification(currentOrder, file);
+
+        hidePendingBar();
+        closeModal('paymentModal');
+
+        document.getElementById('statusPendingBox').classList.remove('hidden');
+        document.getElementById('statusDoneBox').classList.add('hidden');
+        openModal('statusModal');
+
+        showToast("Bukti transfer berhasil dikirim!");
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function sendTelegramNotification(order, file) {
+      if(!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === "YOUR_TELEGRAM_BOT_TOKEN") return;
+
+      let targetsText = "";
+      order.targets.forEach((t, i) => {
+        targetsText += `  ${i+1}. +62${t.number} (${t.type})\n`;
+      });
+
+      const message = `🚨 *PESANAN BARU JASBUG ONLINE* 🚨\n\n` +
+                      `🆔 *ID Pesanan:* \`${order.id}\`\n` +
+                      `💰 *Total Nominal:* Rp${order.total.toLocaleString('id-ID')}\n` +
+                      `📝 *Catatan:* ${order.note || '-'}\n\n` +
+                      `🎯 *Target Bug:* \n${targetsText}\n` +
+                      `⏰ *Waktu:* ${order.date}\n\n` +
+                      `_Harap cek bukti transfer pada gambar di atas!_`;
+
+      const formData = new FormData();
+      formData.append('chat_id', TELEGRAM_CHAT_ID);
+      formData.append('photo', file);
+      formData.append('caption', message);
+      formData.append('parse_mode', 'Markdown');
+
+      fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+        method: 'POST',
+        body: formData
+      }).catch(err => console.error("Gagal kirim telegram:", err));
+    }
+
+    function adminApproveOrder(orderId) {
+      const order = adminOrders.find(o => o.id === orderId);
+      if(order) {
+        order.status = "DONE";
+        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+        renderAdminOrders();
+
+        if(currentOrder && currentOrder.id === orderId) {
+          currentOrder.status = "DONE";
+          canUserReview = true;
+          
           document.getElementById('statusPendingBox').classList.add('hidden');
           document.getElementById('statusDoneBox').classList.remove('hidden');
-          document.getElementById('activeOrderText').innerText = "Pesanan disetujui! Klik untuk ambil akses.";
-        }
-      });
-    }
-
-    // Realtime List di Panel Admin
-    function loadAdminOrders() {
-      db.ref('orders').on('value', snapshot => {
-        const orders = snapshot.val();
-        const list = document.getElementById('adminOrdersList');
-        list.innerHTML = '';
-
-        if (!orders) {
-          list.innerHTML = '<p class="text-xs text-gray-400 text-center py-6">Belum ada pesanan masuk.</p>';
-          return;
         }
 
-        const keys = Object.keys(orders).reverse();
-        keys.forEach(k => {
-          const item = orders[k];
-          const div = document.createElement('div');
-          div.className = "bg-gray-950 border border-gray-800 p-3 rounded-xl space-y-2 text-xs";
-
-          div.innerHTML = `
-            <div class="flex justify-between items-start">
-              <div>
-                <p class="font-bold text-white">${item.buyerName}</p>
-                <p class="text-green-400 font-semibold">${item.productName} - Rp ${item.price.toLocaleString('id-ID')}</p>
-              </div>
-              <span class="px-2 py-0.5 text-[10px] rounded ${item.status === 'WAITING_ADMIN' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'}">
-                ${item.status === 'WAITING_ADMIN' ? 'Pending' : 'Disetujui'}
-              </span>
-            </div>
-            ${item.status === 'WAITING_ADMIN' ? `
-              <button onclick="approveOrder('${k}')" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-1.5 rounded-lg transition">
-                <i class="fa-solid fa-check mr-1"></i> Terima Pesanan Pelanggan
-              </button>
-            ` : '<p class="text-[10px] text-gray-500 text-center">Transaksi Selesai</p>'}
-          `;
-          list.appendChild(div);
-        });
-      });
-    }
-
-    // Admin Klik Terima Pesanan
-    function approveOrder(orderId) {
-      db.ref('orders/' + orderId).update({
-        status: 'DONE'
-      }).then(() => alert("Berhasil menyetujui pesanan!"));
-    }
-
-    // Load Otomatis saat Halaman Dibuka
-    window.addEventListener('DOMContentLoaded', () => {
-      if (activeOrderId) {
-        listenToOrderStatus(activeOrderId);
+        showToast("Pesanan DITERIMA. Tampilan pembeli telah diperbarui.");
       }
-      loadAdminOrders();
-    });
+    }
+
+    function adminRejectOrder(orderId) {
+      if(confirm("Apakah Anda yakin ingin menolak pesanan ini?")) {
+        adminOrders = adminOrders.filter(o => o.id !== orderId);
+        localStorage.setItem('jasbug_admin_orders', JSON.stringify(adminOrders));
+        renderAdminOrders();
+        showToast("Pesanan ditolak/dihapus.");
+      }
+    }
+
+    function renderAdminOrders() {
+      const container = document.getElementById('adminOrdersList');
+      if(!container) return;
+
+      if(adminOrders.length === 0) {
+        container.innerHTML = `<div class="text-gray-500 italic text-center py-2">Belum ada pesanan masuk.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      adminOrders.forEach(o => {
+        let targetsText = o.targets.map(t => `+62${escapeHtml(t.number)} [${escapeHtml(t.type)}]`).join(', ');
+        const card = `
+          <div class="bg-gray-950 p-3 rounded-xl border ${o.status === 'DONE' ? 'border-green-500/40' : 'border-amber-500/40'} space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">${escapeHtml(o.id)}</span>
+              <span class="font-bold text-green-400">Rp${o.total.toLocaleString('id-ID')}</span>
+            </div>
+            <div class="text-gray-300 text-[11px]"><b>Target:</b> ${targetsText}</div>
+            ${o.proofImg ? `<a href="${o.proofImg}" target="_blank" class="text-amber-400 underline text-[11px] block"><i class="fa-solid fa-image"></i> Lihat Bukti TF</a>` : ''}
+            
+            <div class="flex items-center gap-2 pt-1">
+              ${o.status === 'WAITING_ADMIN' ? `
+                <button onclick="adminApproveOrder('${o.id}')" class="flex-1 bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-1.5 rounded-lg text-[11px]">
+                  <i class="fa-solid fa-check"></i> Masuk (Diterima)
+                </button>
+              ` : `
+                <span class="text-green-400 font-bold text-[11px]"><i class="fa-solid fa-circle-check"></i> Sudah Dikonfirmasi</span>
+              `}
+              <button onclick="adminRejectOrder('${o.id}')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-2.5 py-1.5 rounded-lg text-[11px]">
+                Hapus
+              </button>
+            </div>
+          </div>
+        `;
+        container.innerHTML += card;
+      });
+    }
+
+    function toggleAdminLogin() {
+      if (!isAdmin) {
+        const pass = prompt("Masukkan Password Pemilik:");
+        if (pass === ADMIN_PASSWORD) {
+          isAdmin = true;
+          document.getElementById('adminBtnText').innerText = "Mode Pemilik (Aktif)";
+          document.getElementById('editPosterBtn').classList.remove('hidden');
+          document.getElementById('adminPanelOrders').classList.remove('hidden');
+          renderAdminOrders();
+          showToast("Berhasil masuk mode Pemilik.");
+        } else if (pass !== null) {
+          alert("Password salah!");
+        }
+      } else {
+        isAdmin = false;
+        document.getElementById('adminBtnText').innerText = "Akses Pemilik";
+        document.getElementById('editPosterBtn').classList.add('hidden');
+        document.getElementById('adminPanelOrders').classList.add('hidden');
+        showToast("Anda keluar dari mode pemilik.");
+      }
+    }
+
+    function checkReviewEligibility() {
+      const lockedBox = document.getElementById('reviewLockedBox');
+      const inputBox = document.getElementById('reviewInputBox');
+
+      if(canUserReview || isAdmin) {
+        lockedBox.classList.add('hidden');
+        inputBox.classList.remove('hidden');
+      } else {
+        lockedBox.classList.remove('hidden');
+        inputBox.classList.add('hidden');
+      }
+    }
+
+    function openReviewFromDoneOrder() {
+      closeModal('statusModal');
+      openModal('reviewModal');
+    }
+
+    function setRating(score) {
+      selectedRating = score;
+      document.getElementById('ratingScoreText').innerText = `${score}.0 / 5`;
+      
+      const buttons = document.querySelectorAll('#starRatingInput button');
+      buttons.forEach((btn, index) => {
+        if (index < score) {
+          btn.className = "star-btn text-amber-400";
+        } else {
+          btn.className = "star-btn text-gray-600";
+        }
+      });
+    }
+
+    function submitReview() {
+      const rawName = document.getElementById('reviewerName').value.trim();
+      const rawComment = document.getElementById('reviewerComment').value.trim();
+
+      const name = rawName ? escapeHtml(rawName) : "Pelanggan Terverifikasi";
+      const comment = escapeHtml(rawComment);
+
+      if (!comment) {
+        alert("Harap tuliskan ulasan Anda.");
+        return;
+      }
+
+      reviews.unshift({
+        name: name,
+        rating: selectedRating,
+        comment: comment,
+        date: "Baru saja"
+      });
+
+      localStorage.setItem('jasbug_reviews', JSON.stringify(reviews));
+      document.getElementById('reviewerComment').value = "";
+      renderReviews();
+      showToast("Ulasan berhasil terbit!");
+    }
+
+    function renderReviews() {
+      const container = document.getElementById('allReviewsList');
+      const recentContainer = document.getElementById('recentReviewsContainer');
+      container.innerHTML = "";
+      recentContainer.innerHTML = "";
+
+      let totalRating = 0;
+
+      reviews.forEach((rev, index) => {
+        totalRating += rev.rating;
+
+        let starsHtml = "";
+        for (let i = 1; i <= 5; i++) {
+          starsHtml += `<i class="fa-solid fa-star ${i <= rev.rating ? 'text-amber-400' : 'text-gray-700'} text-xs"></i>`;
+        }
+
+        container.innerHTML += `
+          <div class="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-xs text-gray-200">${escapeHtml(rev.name)}</span>
+              <span class="text-[10px] text-gray-500">${escapeHtml(rev.date)}</span>
+            </div>
+            <div class="flex items-center gap-1">${starsHtml}</div>
+            <p class="text-xs text-gray-300 pt-0.5">${escapeHtml(rev.comment)}</p>
+          </div>
+        `;
+
+        if (index < 2) {
+          recentContainer.innerHTML += `
+            <div class="flex items-center justify-between bg-gray-950/60 p-2 rounded-lg border border-gray-800/50">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <span class="font-semibold text-gray-300 shrink-0">${escapeHtml(rev.name)}:</span>
+                <span class="truncate text-gray-400 text-[11px]">${escapeHtml(rev.comment)}</span>
+              </div>
+              <div class="flex shrink-0 gap-0.5">${starsHtml}</div>
+            </div>
+          `;
+        }
+      });
+
+      const avg = (reviews.length > 0) ? (totalRating / reviews.length).toFixed(1) : "5.0";
+      document.getElementById('avgRatingDisplay').innerText = `${avg} / 5.0`;
+    }
+
+    function savePosterSettings() {
+      const newImg = document.getElementById('editImgUrl').value;
+      const newTitle = document.getElementById('editTitle').value;
+      const newDesc = document.getElementById('editDesc').value;
+
+      if (newImg) document.getElementById('posterImg').src = newImg;
+      if (newTitle) document.getElementById('posterTitle').innerText = newTitle;
+      if (newDesc) document.getElementById('posterDesc').innerText = newDesc;
+
+      closeModal('editPosterModal');
+      showToast("Poster berhasil diperbarui!");
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds} WIB`;
+
+      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      
+      document.getElementById('date').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    renderReviews();
   </script>
 </body>
 </html>
