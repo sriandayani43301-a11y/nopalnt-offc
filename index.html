@@ -48,66 +48,121 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-6 max-w-2xl mx-auto pb-24">
 
-  <!-- TOP BAR / HEADER -->
-  <div>
-    <div class="flex justify-between items-center bg-gray-900/80 backdrop-blur border border-gray-800 rounded-2xl p-4 mb-4">
-      <div class="flex items-center space-x-2 text-xs text-gray-400">
-        <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="font-medium text-gray-300">Server Active</span>
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <!-- TOMBOL ADMIN TOGGLE -->
-        <button id="adminBtn" onclick="toggleAdminLogin()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-shield-halved text-green-400"></i>
-          <span id="adminBtnText">Admin</span>
-        </button>
-        <!-- NAMA BUYER DI POJOK KANAN ATAS -->
-        <button onclick="changeBuyerName()" class="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700/80 px-3 py-1.5 rounded-xl border border-gray-700/50 transition">
-          <i class="fa-solid fa-user text-green-400 text-xs"></i>
-          <span id="displayBuyerName" class="font-semibold text-xs text-gray-200">Set Nama Anda</span>
-          <i class="fa-solid fa-pen text-[10px] text-gray-500 ml-1"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- WAKTU REALTIME INDONESIA -->
-    <div class="bg-gradient-to-r from-gray-900 via-gray-900 to-gray-800 border border-green-500/30 rounded-2xl p-4 text-center mb-6 neon-glow">
-      <div class="text-[11px] font-semibold text-green-400 uppercase tracking-widest mb-1">Waktu Real-Time Indonesia</div>
-      <div id="clock" class="text-3xl font-extrabold tracking-wider text-white font-mono">00:00:00 WIB</div>
-      <div id="date" class="text-xs text-gray-400 mt-1 font-medium">Hari, 00 Bulan 0000</div>
-    </div>
-
-    <!-- ACTION BUTTONS (JASA BUG & RIWAYAT BUG) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-      <button onclick="handleJasaBugClick()" class="md:col-span-2 bg-gradient-to-br from-green-500 to-emerald-700 hover:from-green-400 hover:to-emerald-600 text-gray-950 font-extrabold p-5 rounded-2xl shadow-xl border border-green-400/50 flex flex-col items-center justify-center space-y-1.5 transition transform hover:-translate-y-1 active:scale-95">
-        <div class="bg-gray-950/20 p-2.5 rounded-xl">
-          <i class="fa-solid fa-bug text-2xl text-gray-950"></i>
+  <!-- Halaman 1: FORM AUTENTIKASI (REGISTER & LOGIN) -->
+  <div id="authSection" class="my-auto w-full max-w-md mx-auto py-10">
+    <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8 shadow-2xl relative">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-green-500/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-green-500/30">
+          <i class="fa-solid fa-bug text-2xl"></i>
         </div>
-        <span class="text-lg">Jasa Bug</span>
-        <span class="text-[11px] font-semibold bg-black/20 px-3 py-0.5 rounded-full">Rp2.000 / Nomor • Garansi</span>
-      </button>
-
-      <!-- TOMBOL RIWAYAT BUG BUYER -->
-      <button onclick="openBuyerHistoryModal()" class="bg-gray-900 hover:bg-gray-800/80 text-white font-bold p-5 rounded-2xl border border-gray-800 flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
-        <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/30 text-blue-400">
-          <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
-        </div>
-        <span class="text-sm">Riwayat Saya</span>
-        <span class="text-[10px] text-gray-400 font-medium">Cek Pesanan Anda</span>
-      </button>
-    </div>
-
-    <!-- PANEL ADMIN DAFTAR PESANAN MASUK -->
-    <div id="adminPanelOrders" class="hidden mb-6 bg-gray-900 border border-amber-500/40 rounded-2xl p-4">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
-          <i class="fa-solid fa-bell animate-bounce"></i> Semua Pesanan Masuk (Admin Mode)
-        </span>
-        <span id="orderBadgeCount" class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">0 Pesanan</span>
+        <h2 id="authTitle" class="text-xl font-extrabold text-white">Buat Akun Buyer</h2>
+        <p id="authSubtitle" class="text-xs text-gray-400 mt-1">Daftar akun dulu sebelum masuk ke dashboard order.</p>
       </div>
-      <div id="adminOrdersList" class="space-y-3 text-xs">
-        <!-- Render via JS -->
+
+      <!-- FORM REGISTER -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label>
+          <input type="text" id="regUsername" required placeholder="Contoh: user123" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
+          <input type="password" id="regPassword" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500">
+        </div>
+        <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">
+          Daftar Akun
+        </button>
+        <p class="text-center text-xs text-gray-400 mt-3">
+          Sudah punya akun? <a href="#" onclick="switchAuthMode('login')" class="text-green-400 font-semibold hover:underline">Login disini</a>
+        </p>
+      </form>
+
+      <!-- FORM LOGIN -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">USERNAME</label>
+          <input type="text" id="loginUsername" required placeholder="Masukkan username" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 mb-1">PASSWORD</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500">
+        </div>
+        <button type="submit" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl text-xs transition shadow-lg">
+          Masuk ke Dashboard
+        </button>
+        <p class="text-center text-xs text-gray-400 mt-3">
+          Belum punya akun? <a href="#" onclick="switchAuthMode('register')" class="text-green-400 font-semibold hover:underline">Daftar sekarang</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Halaman 2: DASHBOARD UTAMA (TERSEMBUNYI SEBELUM LOGIN) -->
+  <div id="dashboardSection" class="hidden">
+    <!-- TOP BAR / HEADER -->
+    <div>
+      <div class="flex justify-between items-center bg-gray-900/80 backdrop-blur border border-gray-800 rounded-2xl p-4 mb-4">
+        <div class="flex items-center space-x-2 text-xs text-gray-400">
+          <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+          <span class="font-medium text-gray-300">Server Active</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- ADMIN TOGGLE -->
+          <button id="adminBtn" onclick="toggleAdminLogin()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-xl border border-gray-700 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-shield-halved text-green-400"></i>
+            <span id="adminBtnText">Admin</span>
+          </button>
+          
+          <!-- INFO NAMA BUYER + LOGOUT -->
+          <div class="flex items-center space-x-1.5 bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-700/50">
+            <i class="fa-solid fa-user text-green-400 text-xs"></i>
+            <span id="displayBuyerName" class="font-semibold text-xs text-gray-200">Buyer</span>
+            <button onclick="handleLogout()" class="text-[11px] text-red-400 hover:text-red-300 ml-2 font-bold" title="Keluar Akun">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WAKTU REALTIME INDONESIA -->
+      <div class="bg-gradient-to-r from-gray-900 via-gray-900 to-gray-800 border border-green-500/30 rounded-2xl p-4 text-center mb-6 neon-glow">
+        <div class="text-[11px] font-semibold text-green-400 uppercase tracking-widest mb-1">Waktu Real-Time Indonesia</div>
+        <div id="clock" class="text-3xl font-extrabold tracking-wider text-white font-mono">00:00:00 WIB</div>
+        <div id="date" class="text-xs text-gray-400 mt-1 font-medium">Hari, 00 Bulan 0000</div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <button onclick="openModal('orderModal')" class="md:col-span-2 bg-gradient-to-br from-green-500 to-emerald-700 hover:from-green-400 hover:to-emerald-600 text-gray-950 font-extrabold p-5 rounded-2xl shadow-xl border border-green-400/50 flex flex-col items-center justify-center space-y-1.5 transition transform hover:-translate-y-1 active:scale-95">
+          <div class="bg-gray-950/20 p-2.5 rounded-xl">
+            <i class="fa-solid fa-bug text-2xl text-gray-950"></i>
+          </div>
+          <span class="text-lg">Jasa Bug</span>
+          <span class="text-[11px] font-semibold bg-black/20 px-3 py-0.5 rounded-full">Rp2.000 / Nomor • Garansi</span>
+        </button>
+
+        <button onclick="openBuyerHistoryModal()" class="bg-gray-900 hover:bg-gray-800/80 text-white font-bold p-5 rounded-2xl border border-gray-800 flex flex-col items-center justify-center space-y-2 transition transform hover:-translate-y-1 active:scale-95">
+          <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/30 text-blue-400">
+            <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+          </div>
+          <span class="text-sm">Riwayat Saya</span>
+          <span class="text-[10px] text-gray-400 font-medium">Cek Pesanan Anda</span>
+        </button>
+      </div>
+
+      <!-- PANEL ADMIN PESANAN MASUK -->
+      <div id="adminPanelOrders" class="hidden mb-6 bg-gray-900 border border-amber-500/40 rounded-2xl p-4">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <i class="fa-solid fa-bell animate-bounce"></i> Semua Pesanan Masuk (Admin Mode)
+          </span>
+          <span id="orderBadgeCount" class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-bold">0 Pesanan</span>
+        </div>
+        <div id="adminOrdersList" class="space-y-3 text-xs">
+          <!-- Render via JS -->
+        </div>
       </div>
     </div>
   </div>
@@ -117,25 +172,9 @@
   </footer>
 
 
-  <!-- MODAL INPUT NAMA BUYER AWAL -->
-  <div id="nameModal" class="modal-backdrop fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-50">
-    <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
-      <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-green-500/30">
-        <i class="fa-solid fa-user-tag text-xl"></i>
-      </div>
-      <h3 class="text-base font-bold text-white mb-1">Masukkan Nama Anda</h3>
-      <p class="text-xs text-gray-400 mb-4">Harap isi nama pelanggan untuk sesi perangkat ini.</p>
-      
-      <input type="text" id="buyerNameInput" placeholder="Contoh: Budi / Pelanggan-1" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-green-500 mb-4 text-center font-semibold">
-      
-      <button onclick="saveBuyerName()" class="w-full bg-green-500 hover:bg-green-400 text-gray-950 font-bold py-3 rounded-xl text-xs transition">
-        Simpan & Lanjutkan
-      </button>
-    </div>
-  </div>
-
-
-  <!-- MODAL OVERLAY ORDER BUG -->
+  <!-- MODALS SECTION -->
+  
+  <!-- MODAL ORDER BUG -->
   <div id="orderModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
       <button onclick="closeModal('orderModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
@@ -170,7 +209,7 @@
   </div>
 
 
-  <!-- MODAL PEMBAYARAN QRIS & UPLOAD BUKTI -->
+  <!-- MODAL PEMBAYARAN QRIS -->
   <div id="paymentModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
       <button onclick="closeModal('paymentModal')" class="absolute top-4 right-4 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
@@ -227,9 +266,9 @@
 
       <div class="flex items-center space-x-2 text-blue-400 mb-1">
         <i class="fa-solid fa-clock-rotate-left text-lg"></i>
-        <h3 class="font-bold text-lg text-white">Riwayat Bug Perangkat Ini</h3>
+        <h3 class="font-bold text-lg text-white">Riwayat Bug Akun Saya</h3>
       </div>
-      <p class="text-xs text-gray-400 mb-4">Daftar transaksi khusus untuk akun ini.</p>
+      <p class="text-xs text-gray-400 mb-4">Daftar transaksi khusus untuk akun Anda.</p>
 
       <div id="buyerHistoryContainer" class="space-y-3 overflow-y-auto pr-1 flex-1 text-xs">
         <!-- Render via JS -->
@@ -262,39 +301,114 @@
   </div>
 
 
-  <!-- SCRIPT LOGIKA PERANGKAT TERPISAH (BUYER VS ADMIN) -->
+  <!-- LOGIKA SCRIPT UTAMA -->
   <script>
-    // 1. GENERATE BUYER ID UNIK UNTUK TIAP BROWSER
-    function getOrCreateBuyerId() {
-      let id = localStorage.getItem('jasbug_device_buyer_id');
-      if (!id) {
-        id = 'BUYER-' + Math.floor(100000 + Math.random() * 900000);
-        localStorage.setItem('jasbug_device_buyer_id', id);
-      }
-      return id;
-    }
-
-    const currentBuyerId = getOrCreateBuyerId();
-    let currentBuyerName = localStorage.getItem('jasbug_buyer_name') || "";
+    let loggedInUser = localStorage.getItem('jasbug_session_user') || null;
     let isAdmin = localStorage.getItem('jasbug_is_admin') === 'true';
     const ADMIN_PASSWORD = "admin123";
     let targetCounter = 0;
     let currentOrder = null;
 
     window.onload = function() {
-      if (currentBuyerName) {
-        document.getElementById('displayBuyerName').innerText = currentBuyerName;
-      }
-
-      if (isAdmin) {
-        document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
-        document.getElementById('adminPanelOrders').classList.remove('hidden');
-      }
-
+      checkSession();
       updateClock();
       setInterval(updateClock, 1000);
-      renderAdminOrders();
     };
+
+    function checkSession() {
+      if (loggedInUser) {
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('dashboardSection').classList.remove('hidden');
+        document.getElementById('displayBuyerName').innerText = loggedInUser;
+
+        if (isAdmin) {
+          document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
+          document.getElementById('adminPanelOrders').classList.remove('hidden');
+        }
+
+        renderAdminOrders();
+        
+        // Inisialisasi input target order pertama
+        const container = document.getElementById('targetListContainer');
+        if (container && container.children.length === 0) {
+          addTargetInput();
+        }
+      } else {
+        document.getElementById('authSection').classList.remove('hidden');
+        document.getElementById('dashboardSection').classList.add('hidden');
+      }
+    }
+
+    function switchAuthMode(mode) {
+      if (mode === 'login') {
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('authTitle').innerText = "Login Akun Buyer";
+        document.getElementById('authSubtitle').innerText = "Masukkan username & password untuk lanjut.";
+      } else {
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.getElementById('authTitle').innerText = "Buat Akun Buyer";
+        document.getElementById('authSubtitle').innerText = "Daftar akun dulu sebelum masuk ke dashboard order.";
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const user = document.getElementById('regUsername').value.trim().toLowerCase();
+      const pass = document.getElementById('regPassword').value;
+
+      if (!user || !pass) {
+        alert("Username dan Password wajib diisi!");
+        return;
+      }
+
+      let usersDB = JSON.parse(localStorage.getItem('jasbug_registered_users')) || [];
+      const isExist = usersDB.some(u => u.username === user);
+
+      if (isExist) {
+        alert("Username sudah terpakai! Silakan pilih username lain.");
+        return;
+      }
+
+      usersDB.push({ username: user, password: pass });
+      localStorage.setItem('jasbug_registered_users', JSON.stringify(usersDB));
+
+      alert("Registrasi Berhasil! Silakan Login dengan akun Anda.");
+      document.getElementById('regUsername').value = "";
+      document.getElementById('regPassword').value = "";
+      switchAuthMode('login');
+      document.getElementById('loginUsername').value = user;
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('loginUsername').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPassword').value;
+
+      let usersDB = JSON.parse(localStorage.getItem('jasbug_registered_users')) || [];
+      const foundUser = usersDB.find(u => u.username === user && u.password === pass);
+
+      if (foundUser) {
+        loggedInUser = foundUser.username;
+        localStorage.setItem('jasbug_session_user', loggedInUser);
+        showToast("Login Berhasil!");
+        checkSession();
+      } else {
+        alert("Username atau Password salah!");
+      }
+    }
+
+    function handleLogout() {
+      if (confirm("Yakin ingin keluar dari akun ini?")) {
+        localStorage.removeItem('jasbug_session_user');
+        localStorage.removeItem('jasbug_is_admin');
+        loggedInUser = null;
+        isAdmin = false;
+        showToast("Berhasil Logout.");
+        checkSession();
+      }
+    }
 
     function escapeHtml(text) {
       if (!text) return '';
@@ -324,37 +438,6 @@
         toast.classList.remove('translate-y-0', 'opacity-100');
         toast.classList.add('translate-y-20', 'opacity-0');
       }, 3000);
-    }
-
-    function changeBuyerName() {
-      document.getElementById('buyerNameInput').value = currentBuyerName;
-      openModal('nameModal');
-    }
-
-    function saveBuyerName() {
-      const input = document.getElementById('buyerNameInput').value.trim();
-      if (!input) {
-        alert("Harap masukkan nama Anda!");
-        return;
-      }
-      currentBuyerName = input;
-      localStorage.setItem('jasbug_buyer_name', currentBuyerName);
-      document.getElementById('displayBuyerName').innerText = currentBuyerName;
-      closeModal('nameModal');
-      showToast("Nama berhasil disimpan!");
-    }
-
-    function handleJasaBugClick() {
-      if (!currentBuyerName) {
-        openModal('nameModal');
-        return;
-      }
-
-      const container = document.getElementById('targetListContainer');
-      if (container.children.length === 0) {
-        addTargetInput();
-      }
-      openModal('orderModal');
     }
 
     function addTargetInput() {
@@ -462,11 +545,10 @@
 
       const total = targets.length * 2000;
 
-      // MENYIMPAN BUYER_ID AGAR PESANAN TERPISAH PER PERANGKAT
+      // MENYIMPAN TRANSAKSI KE AKUN USER
       currentOrder = {
         id: "BUG-" + Date.now().toString().slice(-6),
-        buyerId: currentBuyerId,
-        buyerName: currentBuyerName,
+        buyerUsername: loggedInUser,
         targets: targets,
         total: total,
         status: "PENDING",
@@ -494,7 +576,6 @@
       reader.onload = function(e) {
         currentOrder.proofImg = e.target.result;
 
-        // MASUKKAN KEDALAM DATABASE GLOBAL (DATABASE BERSAMA SEMENTARA)
         let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
         allOrders.unshift(currentOrder);
         localStorage.setItem('jasbug_global_orders', JSON.stringify(allOrders));
@@ -509,21 +590,16 @@
       reader.readAsDataURL(file);
     }
 
-    // MEMBUKA RIWAYAT KHUSUS UNTUK BUYER DI BROWSER INI SAJA
+    // MENAMPILKAN RIWAYAT KHUSUS USER YANG LOGIN
     function openBuyerHistoryModal() {
-      if (!currentBuyerName) {
-        openModal('nameModal');
-        return;
-      }
-
       const container = document.getElementById('buyerHistoryContainer');
       const allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
 
-      // FILTER BERDASARKAN BUYER ID UNIK BROWSER
-      const myOrders = allOrders.filter(o => o.buyerId === currentBuyerId);
+      // Filter khusus username yang login
+      const myOrders = allOrders.filter(o => o.buyerUsername === loggedInUser);
 
       if (myOrders.length === 0) {
-        container.innerHTML = `<div class="text-gray-500 italic text-center py-6">Belum ada riwayat transaksi pada perangkat ini.</div>`;
+        container.innerHTML = `<div class="text-gray-500 italic text-center py-6">Belum ada riwayat transaksi pada akun ini.</div>`;
       } else {
         container.innerHTML = "";
         myOrders.forEach(o => {
@@ -551,7 +627,7 @@
               </div>
 
               <div class="text-[10px] text-gray-500 pt-1 border-t border-gray-800/80 flex justify-between">
-                <span>Atas Nama: <b>${escapeHtml(o.buyerName)}</b></span>
+                <span>Akun: <b>${escapeHtml(o.buyerUsername)}</b></span>
                 <span>Waktu: ${escapeHtml(o.date)}</span>
               </div>
             </div>
@@ -563,7 +639,7 @@
       openModal('buyerHistoryModal');
     }
 
-    // CONTROLLER LOG IN UNTUK ADMIN
+    // LOGIKA ADMIN CONTROL
     function toggleAdminLogin() {
       if (!isAdmin) {
         const pass = prompt("Masukkan Password Admin:");
@@ -588,7 +664,6 @@
       }
     }
 
-    // ADMIN AKSI KONFIRMASI
     function adminApproveOrder(orderId) {
       let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
       const order = allOrders.find(o => o.id === orderId);
@@ -601,7 +676,6 @@
       }
     }
 
-    // ADMIN AKSI TOLAK
     function adminRejectOrder(orderId) {
       let allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
       const order = allOrders.find(o => o.id === orderId);
@@ -624,7 +698,6 @@
       }
     }
 
-    // RENDER SEMUA PESANAN KHUSUS ADMIN
     function renderAdminOrders() {
       const container = document.getElementById('adminOrdersList');
       const badge = document.getElementById('orderBadgeCount');
@@ -652,7 +725,7 @@
         const card = `
           <div class="bg-gray-950 p-3.5 rounded-xl border border-amber-500/40 space-y-2">
             <div class="flex justify-between items-center">
-              <span class="font-bold text-white">${escapeHtml(o.id)} • <span class="text-amber-400">${escapeHtml(o.buyerName)}</span></span>
+              <span class="font-bold text-white">${escapeHtml(o.id)} • Akun: <span class="text-amber-400">${escapeHtml(o.buyerUsername)}</span></span>
               <span class="font-bold text-green-400">Rp${o.total.toLocaleString('id-ID')}</span>
             </div>
 
@@ -678,7 +751,7 @@
                   <i class="fa-solid fa-check"></i> Konfirmasi
                 </button>
                 <button onclick="adminRejectOrder('${o.id}')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 font-bold px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 transition">
-                  <i class="fa-solid fa-ban"></i> Tolak: Bukti Palsu
+                  <i class="fa-solid fa-ban"></i> Tolak
                 </button>
               </div>
 
@@ -688,7 +761,7 @@
             </div>
 
             <div class="text-[9px] text-gray-500 text-right">
-              ID Pembeli: ${escapeHtml(o.buyerId)} • Waktu: ${escapeHtml(o.date)}
+              Waktu: ${escapeHtml(o.date)}
             </div>
           </div>
         `;
