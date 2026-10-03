@@ -48,7 +48,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-6 max-w-2xl mx-auto pb-24">
 
-  <!-- Halaman 1: FORM AUTENTIKASI (REGISTER & LOGIN) -->
+  <!-- FORM AUTENTIKASI (REGISTER & LOGIN) -->
   <div id="authSection" class="my-auto w-full max-w-md mx-auto py-10">
     <div class="bg-gray-900 border border-gray-800 rounded-3xl p-6 md:p-8 shadow-2xl relative">
       <div class="text-center mb-6">
@@ -98,7 +98,7 @@
   </div>
 
 
-  <!-- Halaman 2: DASHBOARD UTAMA (TERSEMBUNYI SEBELUM LOGIN) -->
+  <!-- DASHBOARD UTAMA -->
   <div id="dashboardSection" class="hidden">
     <!-- TOP BAR / HEADER -->
     <div>
@@ -119,7 +119,7 @@
           <div class="flex items-center space-x-1.5 bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-700/50">
             <i class="fa-solid fa-user text-green-400 text-xs"></i>
             <span id="displayBuyerName" class="font-semibold text-xs text-gray-200">Buyer</span>
-            <button onclick="handleLogout()" class="text-[11px] text-red-400 hover:text-red-300 ml-2 font-bold" title="Keluar Akun">
+            <button onclick="handleLogout()" class="text-[11px] text-red-400 hover:text-red-300 ml-2 font-bold" title="Keluar Akun Tab Ini">
               <i class="fa-solid fa-right-from-bracket"></i>
             </button>
           </div>
@@ -172,8 +172,6 @@
   </footer>
 
 
-  <!-- MODALS SECTION -->
-  
   <!-- MODAL ORDER BUG -->
   <div id="orderModal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="modal-content bg-gray-900 border border-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
@@ -301,10 +299,11 @@
   </div>
 
 
-  <!-- LOGIKA SCRIPT UTAMA -->
+  <!-- SCRIPT UTAMA DENGAN SESSIONSTORAGE (SESI DILINDUNGI PER TAB) -->
   <script>
-    let loggedInUser = localStorage.getItem('jasbug_session_user') || null;
-    let isAdmin = localStorage.getItem('jasbug_is_admin') === 'true';
+    // MENGGUNAKAN sessionStorage AGAR SETIAP TAB MEREKAM SESINYA SENDIRI-SENDIRI
+    let loggedInUser = sessionStorage.getItem('jasbug_session_user') || null;
+    let isAdmin = sessionStorage.getItem('jasbug_is_admin') === 'true';
     const ADMIN_PASSWORD = "admin123";
     let targetCounter = 0;
     let currentOrder = null;
@@ -324,11 +323,13 @@
         if (isAdmin) {
           document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
           document.getElementById('adminPanelOrders').classList.remove('hidden');
+        } else {
+          document.getElementById('adminBtnText').innerText = "Admin";
+          document.getElementById('adminPanelOrders').classList.add('hidden');
         }
 
         renderAdminOrders();
         
-        // Inisialisasi input target order pertama
         const container = document.getElementById('targetListContainer');
         if (container && container.children.length === 0) {
           addTargetInput();
@@ -363,6 +364,7 @@
         return;
       }
 
+      // AKUN DIDAFARKAN KE LOCALSTORAGE SINKRON UNTUK SEMUA TAB
       let usersDB = JSON.parse(localStorage.getItem('jasbug_registered_users')) || [];
       const isExist = usersDB.some(u => u.username === user);
 
@@ -391,7 +393,8 @@
 
       if (foundUser) {
         loggedInUser = foundUser.username;
-        localStorage.setItem('jasbug_session_user', loggedInUser);
+        // DISIMPAN KE SESSIONSTORAGE AGAR TIDAK MEMPENGARUHI TAB LAIN
+        sessionStorage.setItem('jasbug_session_user', loggedInUser);
         showToast("Login Berhasil!");
         checkSession();
       } else {
@@ -400,9 +403,9 @@
     }
 
     function handleLogout() {
-      if (confirm("Yakin ingin keluar dari akun ini?")) {
-        localStorage.removeItem('jasbug_session_user');
-        localStorage.removeItem('jasbug_is_admin');
+      if (confirm("Yakin ingin keluar dari akun di tab ini?")) {
+        sessionStorage.removeItem('jasbug_session_user');
+        sessionStorage.removeItem('jasbug_is_admin');
         loggedInUser = null;
         isAdmin = false;
         showToast("Berhasil Logout.");
@@ -545,7 +548,6 @@
 
       const total = targets.length * 2000;
 
-      // MENYIMPAN TRANSAKSI KE AKUN USER
       currentOrder = {
         id: "BUG-" + Date.now().toString().slice(-6),
         buyerUsername: loggedInUser,
@@ -590,12 +592,10 @@
       reader.readAsDataURL(file);
     }
 
-    // MENAMPILKAN RIWAYAT KHUSUS USER YANG LOGIN
     function openBuyerHistoryModal() {
       const container = document.getElementById('buyerHistoryContainer');
       const allOrders = JSON.parse(localStorage.getItem('jasbug_global_orders')) || [];
 
-      // Filter khusus username yang login
       const myOrders = allOrders.filter(o => o.buyerUsername === loggedInUser);
 
       if (myOrders.length === 0) {
@@ -639,24 +639,24 @@
       openModal('buyerHistoryModal');
     }
 
-    // LOGIKA ADMIN CONTROL
+    // MODISIKASI ADMIN DENGAN SESSIONSTORAGE KHUSUS TAB INI
     function toggleAdminLogin() {
       if (!isAdmin) {
         const pass = prompt("Masukkan Password Admin:");
         if (pass === ADMIN_PASSWORD) {
           isAdmin = true;
-          localStorage.setItem('jasbug_is_admin', 'true');
+          sessionStorage.setItem('jasbug_is_admin', 'true');
           document.getElementById('adminBtnText').innerText = "Admin (Aktif)";
           document.getElementById('adminPanelOrders').classList.remove('hidden');
           renderAdminOrders();
-          showToast("Berhasil masuk Mode Admin.");
+          showToast("Berhasil masuk Mode Admin di tab ini.");
         } else if (pass !== null) {
           alert("Password Admin Salah!");
         }
       } else {
-        if (confirm("Keluar dari Mode Admin?")) {
+        if (confirm("Keluar dari Mode Admin di tab ini?")) {
           isAdmin = false;
-          localStorage.setItem('jasbug_is_admin', 'false');
+          sessionStorage.setItem('jasbug_is_admin', 'false');
           document.getElementById('adminBtnText').innerText = "Admin";
           document.getElementById('adminPanelOrders').classList.add('hidden');
           showToast("Keluar dari Mode Admin.");
